@@ -5,7 +5,7 @@
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://www.facebook.com/deveshrx)
 
 
-eBook Library App which let you browse, download, view PDF ebooks.
+eBook Library App which let you browse, download, view PDF ebooks from your own [Firebase](http://firebase.google.com) server.
 
 #### To-Do List:
 1) Improve UI
