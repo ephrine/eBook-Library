@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+       <!-- <item
+            android:id="@+id/nav_tools"
+            android:icon="@drawable/baseline_home_black_48dp"
+            android:title="Home" /> -->
+        <item
+            android:id="@+id/BrowseStoreMenu"
+            android:icon="@drawable/baseline_store_black_48dp"
+            android:title="Browse Store" />
+        <item
+            android:id="@+id/MyLibraryMenu"
+            android:icon="@drawable/book_baseline_book_black_48dp"
+            android:title="My Library" />
+
+        <item
+            android:id="@+id/myAccountMenu"
+            android:icon="@drawable/baseline_account_circle_black_48dp"
+            android:title="My Account" />
+
+        <item
+            android:id="@+id/paymentMenu"
+            android:icon="@drawable/baseline_payment_black_48dp"
+            android:title="Payments" />
+
+
+        <!--
+        <item
+            android:id="@+id/settingMenu"
+            android:icon="@drawable/baseline_settings_black_48dp"
+            android:title="Setting" /> -->
+        <item
+            android:id="@+id/AboutMenu"
+            android:icon="@drawable/baseline_info_black_48dp"
+            android:title="About" />
+    </group>
+
+    <!--  <item android:title="">
+          <menu>
+
+          </menu>
+      </item>
+  -->
+</menu>

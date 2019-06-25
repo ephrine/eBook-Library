@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BookViewActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/BookCoverPicimageView2"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/bookcover625px" />
+
+            <TextView
+                android:id="@+id/BookTitletextView45"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Book Title "
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/BookAuthortextView58"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Author"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/Add2Libchip2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:onClick="Add2Library"
+                    android:text="Add to Library"
+                    app:chipIcon="@drawable/baseline_favorite_border_black_48dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/BookLanguageChip22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:text="Sanskrit Language" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+
+            <TextView
+                android:id="@+id/BookDesctextView647"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="hfy hgfggbj hry khbhfg bxxxxxxxxxxxxxxxxxxx h vbn bbbbbbbbbbbbbbbbb jjjj  gggggggggggggg" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
