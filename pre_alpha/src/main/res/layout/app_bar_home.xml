@@ -29,17 +29,18 @@
         android:weightSum="1">
 
         <include
-                android:id="@+id/includeHome"
-                layout="@layout/content_home" />
-            <include
-                android:id="@+id/includeMyAccount"
-                layout="@layout/myaccount"
-                android:visibility="gone" />
+            android:id="@+id/includeHome"
+            layout="@layout/content_home" />
 
-            <include
-                android:id="@+id/includeMyLibrary"
-                layout="@layout/my_book_library"
-                android:visibility="gone" />
+        <include
+            android:id="@+id/includeMyAccount"
+            layout="@layout/myaccount"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/includeMyLibrary"
+            layout="@layout/my_book_library"
+            android:visibility="gone" />
 
         <include
             android:id="@+id/includeAbout"

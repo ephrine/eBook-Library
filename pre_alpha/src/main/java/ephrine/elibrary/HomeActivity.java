@@ -6,7 +6,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +20,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -27,8 +28,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +50,10 @@ public class HomeActivity extends AppCompatActivity
     View includeAccountView;
     View includeMyLibraryBooks;
     View includeAbout;
+    String LoadBooksCategory;
+    String LoadBooksSubCategory;
+    LinearLayout LLSubCat;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +90,6 @@ public class HomeActivity extends AppCompatActivity
         loadbooks();
 
 
-
-
     }
 
     @Override
@@ -120,14 +121,14 @@ public class HomeActivity extends AppCompatActivity
             Toast.makeText(this, "Refreshing....", Toast.LENGTH_SHORT).show();
 
             includeMyLibraryBooks = (View) findViewById(R.id.includeMyLibrary);
-            if(includeHomeView.getVisibility()!=View.GONE){
+            if (includeHomeView.getVisibility() != View.GONE) {
                 recyclerView.removeAllViews();
                 loadbooks();
             }
-            if(includeAccountView.getVisibility()!=View.GONE){
+            if (includeAccountView.getVisibility() != View.GONE) {
                 LoadMyAccount();
             }
-            if(includeMyLibraryBooks.getVisibility()!=View.GONE){
+            if (includeMyLibraryBooks.getVisibility() != View.GONE) {
                 myLibraryBooksrecyclerView.removeAllViews();
                 LoadMyLibrary();
             }
@@ -182,8 +183,7 @@ public class HomeActivity extends AppCompatActivity
             includeMyLibraryBooks.setVisibility(View.GONE);
             includeAbout.setVisibility(View.GONE);
 
-        }
-        else if (id == R.id.AboutMenu) {
+        } else if (id == R.id.AboutMenu) {
             includeHomeView.setVisibility(View.GONE);
             includeAccountView.setVisibility(View.GONE);
             includeMyLibraryBooks.setVisibility(View.GONE);
@@ -198,6 +198,78 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+  /*  private BillingClient billingClient;
+
+public void billing(){
+    billingClient = BillingClient.newBuilder(HomeActivity.this).setListener(this).build();
+    billingClient.startConnection(new BillingClientStateListener() {
+        @Override
+        public void onBillingSetupFinished(BillingResult billingResult) {
+            if (billingResult.getResponseCode() == BillingResponse.OK) {
+                // The BillingClient is ready. You can query purchases here.
+            }
+        }
+        @Override
+        public void onBillingServiceDisconnected() {
+            // Try to restart the connection on the next request to
+            // Google Play by calling the startConnection() method.
+        }
+    });
+
+
+
+    List<String> skuList = new ArrayList<> ();
+    skuList.add("premium_upgrade");
+    skuList.add("gas");
+    SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+    params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
+    billingClient.querySkuDetailsAsync(params.build(),
+            new SkuDetailsResponseListener() {
+                @Override
+                public void onSkuDetailsResponse(BillingResult billingResult,
+                                                 List<SkuDetails> skuDetailsList) {
+                    // Process the result.
+                }
+            });
+
+
+    if (result.getResponseCode() == BillingResponse.OK && skuDetailsList != null) {
+        for (SkuDetails skuDetails : skuDetailsList) {
+            String sku = skuDetails.getSku();
+            String price = skuDetails.getPrice();
+            if ("premium_upgrade".equals(sku)) {
+                premiumUpgradePrice = price;
+            } else if ("gas".equals(sku)) {
+                gasPrice = price;
+            }
+        }
+
+
+        // Retrieve a value for "skuDetails" by calling querySkuDetailsAsync().
+        BillingFlowParams flowParams = BillingFlowParams.newBuilder()
+                .setSkuDetails(skuDetails)
+                .build();
+        int responseCode = billingClient.launchBillingFlow(flowParams);
+    }
+
+}
+
+    @Override
+    void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
+        if (billingResult.getResponseCode() == BillingResponse.OK
+                && purchases != null) {
+            for (Purchase purchase : purchases) {
+                handlePurchase(purchase);
+            }
+        } else if (billingResult.getResponseCode() == BillingResponse.USER_CANCELED) {
+            // Handle an error caused by a user cancelling the purchase flow.
+        } else {
+            // Handle any other error codes.
+        }
+    }
+
+*/
 
     public void LoadMyAccount() {
 
@@ -308,156 +380,149 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-  /*  private BillingClient billingClient;
-
-public void billing(){
-    billingClient = BillingClient.newBuilder(HomeActivity.this).setListener(this).build();
-    billingClient.startConnection(new BillingClientStateListener() {
-        @Override
-        public void onBillingSetupFinished(BillingResult billingResult) {
-            if (billingResult.getResponseCode() == BillingResponse.OK) {
-                // The BillingClient is ready. You can query purchases here.
-            }
-        }
-        @Override
-        public void onBillingServiceDisconnected() {
-            // Try to restart the connection on the next request to
-            // Google Play by calling the startConnection() method.
-        }
-    });
-
-
-
-    List<String> skuList = new ArrayList<> ();
-    skuList.add("premium_upgrade");
-    skuList.add("gas");
-    SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-    params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
-    billingClient.querySkuDetailsAsync(params.build(),
-            new SkuDetailsResponseListener() {
-                @Override
-                public void onSkuDetailsResponse(BillingResult billingResult,
-                                                 List<SkuDetails> skuDetailsList) {
-                    // Process the result.
-                }
-            });
-
-
-    if (result.getResponseCode() == BillingResponse.OK && skuDetailsList != null) {
-        for (SkuDetails skuDetails : skuDetailsList) {
-            String sku = skuDetails.getSku();
-            String price = skuDetails.getPrice();
-            if ("premium_upgrade".equals(sku)) {
-                premiumUpgradePrice = price;
-            } else if ("gas".equals(sku)) {
-                gasPrice = price;
-            }
-        }
-
-
-        // Retrieve a value for "skuDetails" by calling querySkuDetailsAsync().
-        BillingFlowParams flowParams = BillingFlowParams.newBuilder()
-                .setSkuDetails(skuDetails)
-                .build();
-        int responseCode = billingClient.launchBillingFlow(flowParams);
-    }
-
-}
-
-    @Override
-    void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
-        if (billingResult.getResponseCode() == BillingResponse.OK
-                && purchases != null) {
-            for (Purchase purchase : purchases) {
-                handlePurchase(purchase);
-            }
-        } else if (billingResult.getResponseCode() == BillingResponse.USER_CANCELED) {
-            // Handle an error caused by a user cancelling the purchase flow.
-        } else {
-            // Handle any other error codes.
-        }
-    }
-
-*/
-
     private void loadbooks() {
 
         if (includeHomeView.getVisibility() != View.GONE) {
 
-            recyclerView = (RecyclerView) findViewById(R.id.mRecycleView);
-            recyclerView.removeAllViews();
-            recyclerView.removeAllViewsInLayout();
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
-            recyclerView.setHasFixedSize(true);
+            Spinner CategorySpinner = (Spinner) findViewById(R.id.CategorySpinner);
+            Spinner SubCategorySpinner = (Spinner) findViewById(R.id.SubCategorySpinner2);
 
-            // use a linear layout manager
-            layoutManager = new LinearLayoutManager(this);
-            recyclerView.setLayoutManager(layoutManager);
-            //  recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+            LoadBooksCategory = CategorySpinner.getSelectedItem().toString();
+            Log.d(TAG, "onItemSelected: Category: " + LoadBooksCategory);
 
+            LoadBooksSubCategory = SubCategorySpinner.getSelectedItem().toString();
+            Log.d(TAG, "onItemSelected: Category: " + LoadBooksSubCategory);
 
-            // Write a message to the database
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("ebooksapp/library/books");
-            // Read from the database
-            myRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // This method is called once with the initial value and again
-                    // whenever data at this location is updated.
-                    //   String value = dataSnapshot.getValue(String.class);
-                    //   Log.d(TAG, "Value is: " + value);
-                    StoreBooksList.clear();
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+            LLSubCat = (LinearLayout) findViewById(R.id.LLSubC);
+            LLSubCat.setVisibility(View.INVISIBLE);
+            CategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Object item = parent.getItemAtPosition(position);
+                    String t = item.toString();
+                    Log.d(TAG, "onItemSelected: Category: " + t);
+                    LoadBooksCategory = t;
+                    LoadRecycleView();
 
-                        HashMap<String, String> StoreBook = new HashMap<String, String>();
+                    LLSubCat.setVisibility(View.VISIBLE);
 
-                        String BookName = postSnapshot.child("bookname").getValue(String.class);
-                        String BookAuthor = postSnapshot.child("bookauthor").getValue(String.class);
-                        String BookYear = postSnapshot.child("bookyear").getValue(String.class);
-                        String BookCategory = postSnapshot.child("bookcategory").getValue(String.class);
-                        String BookCover = postSnapshot.child("bookcover").getValue(String.class);
-                        String BookURL = postSnapshot.child("bookurl").getValue(String.class);
-                        String BookID = postSnapshot.child("bookid").getValue(String.class);
-
-
-                        StoreBook.put("bookname", BookName);
-                        StoreBook.put("bookauthor", BookAuthor);
-                        StoreBook.put("bookyear", BookYear);
-                        StoreBook.put("bookcategory", BookCategory);
-                        StoreBook.put("bookcover", BookCover);
-                        StoreBook.put("bookurl", BookURL);
-                        StoreBook.put("bookid", BookID);
-
-                        StoreBooksList.add(StoreBook);
-
-                        Log.d(TAG, "-------------------onDataChange:\n Book Details:\n" + StoreBook);
-
-                        if (StoreBooksList != null) {
-                            if (includeHomeView.getVisibility() != View.GONE) {
-
-                                // specify an adapter (see also next example)
-                                mAdapter = new MyAdapter(HomeActivity.this, StoreBooksList);
-                                recyclerView.setAdapter(mAdapter);
-                            }
-                        }
-
-                    }
 
                 }
 
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w(TAG, "Failed to read value.", error.toException());
+                public void onNothingSelected(AdapterView<?> parent) {
                 }
             });
+
+            SubCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Object item = parent.getItemAtPosition(position);
+                    String t = item.toString();
+                    Log.d(TAG, "onItemSelected: Category: " + t);
+                    LoadBooksSubCategory = t;
+                    LoadRecycleView();
+                }
+
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+            LoadRecycleView();
 
         }
 
     }
 
+    public void LoadRecycleView() {
+        recyclerView = (RecyclerView) findViewById(R.id.mRecycleView);
+        recyclerView.removeAllViews();
+        recyclerView.removeAllViewsInLayout();
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        //  recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+
+        Toast.makeText(this, "Loading...", Toast.LENGTH_LONG).show();
+
+        // Write a message to the database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("ebooksapp/library/books");
+        // Read from the database
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                //   String value = dataSnapshot.getValue(String.class);
+                //   Log.d(TAG, "Value is: " + value);
+                StoreBooksList.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    HashMap<String, String> StoreBook = new HashMap<String, String>();
+
+                    String BookName = postSnapshot.child("bookname").getValue(String.class);
+                    String BookAuthor = postSnapshot.child("bookauthor").getValue(String.class);
+                    String BookYear = postSnapshot.child("bookyear").getValue(String.class);
+                    String BookCategory = postSnapshot.child("bookcategory").getValue(String.class);
+                    String BookSubCategory = postSnapshot.child("booksubcategory").getValue(String.class);
+                    String BookCover = postSnapshot.child("bookcover").getValue(String.class);
+                    String BookURL = postSnapshot.child("bookurl").getValue(String.class);
+                    String BookID = String.valueOf(postSnapshot.child("bookid").getValue(Integer.class));
+
+                    if (LoadBooksCategory.equals(BookCategory) || LoadBooksCategory.equals("All")) {
+                        Log.d(TAG, "onItemSelected: Category: If Loop: " + LoadBooksCategory);
+                        Log.d(TAG, "onItemSelected: Category: if loop :" + LoadBooksSubCategory);
+
+                        if (LoadBooksSubCategory.equals(BookSubCategory) || LoadBooksSubCategory.equals("All")) {
+
+                            StoreBook.put("bookname", BookName);
+                            StoreBook.put("bookauthor", BookAuthor);
+                            StoreBook.put("bookyear", BookYear);
+                            StoreBook.put("booksubcategory", BookSubCategory);
+                            StoreBook.put("bookcategory", BookCategory);
+                            StoreBook.put("bookcover", BookCover);
+                            StoreBook.put("bookurl", BookURL);
+                            StoreBook.put("bookid", BookID);
+
+                            StoreBooksList.add(StoreBook);
+
+                            Log.d(TAG, "-------------------onDataChange:\n Book Details:\n" + StoreBook);
+
+                            if (StoreBooksList != null) {
+                                if (includeHomeView.getVisibility() != View.GONE) {
+
+                                    // specify an adapter (see also next example)
+                                    mAdapter = new MyAdapter(HomeActivity.this, StoreBooksList);
+                                    recyclerView.setAdapter(mAdapter);
+                                }
+                            }
+
+
+                        } else {
+                            //    Toast.makeText(HomeActivity.this, "No Books Available in "+LoadBooksSubCategory, Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "onDataChange: #56 Null");
+                        }
+
+                    } else {
+                        //Toast.makeText(HomeActivity.this, "No Books Available in "+LoadBooksCategory, Toast.LENGTH_SHORT).show();
+
+                        Log.d(TAG, "onDataChange: #98 NULL");
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
+
+    }
 
     public void LoadMyLibrary() {
 

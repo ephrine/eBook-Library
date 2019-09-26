@@ -31,6 +31,27 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser != null) {
+        //    Intent intent = new Intent(this, HomeActivity.class);
+          //  finish();
+            //  String message = editText.getText().toString();
+            //intent.putExtra(EXTRA_MESSAGE, message);
+          //  startActivity(intent);
+        } else {
+          //  login();
+        }
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
             Intent intent = new Intent(this, HomeActivity.class);
             finish();
             //  String message = editText.getText().toString();
@@ -39,8 +60,6 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             login();
         }
-
-
     }
 
     public void login() {

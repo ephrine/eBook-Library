@@ -5,12 +5,10 @@
 package ephrine.elibrary;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,7 +41,7 @@ public class BookViewActivity extends AppCompatActivity {
     String BookID;
     String BookDesc;
     String BookLanguage;
-//    Button Add2LibraryBT;
+    //    Button Add2LibraryBT;
     Chip Add2LibraryChip;
     boolean isAddedtoLibrary;
 
@@ -63,7 +61,7 @@ public class BookViewActivity extends AppCompatActivity {
         final TextView BookDescTXT = (TextView) findViewById(R.id.BookDesctextView647);
         final Chip BookLanguageChip = (Chip) findViewById(R.id.BookLanguageChip22);
         Add2LibraryChip = (Chip) findViewById(R.id.Add2Libchip2);
-    //    Add2LibraryBT = (Button) findViewById(R.id.add2libbutton2);
+        //    Add2LibraryBT = (Button) findViewById(R.id.add2libbutton2);
         //  BookLanguageChip22
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference DownloadBookInfo = database.getReference("ebooksapp/library/books/" + ViewBookID);
@@ -84,7 +82,7 @@ public class BookViewActivity extends AppCompatActivity {
                     BookCategory = dataSnapshot.child("bookcategory").getValue(String.class);
                     BookCover = dataSnapshot.child("bookcover").getValue(String.class);
                     BookURL = dataSnapshot.child("bookurl").getValue(String.class);
-                    BookID = dataSnapshot.child("bookid").getValue(String.class);
+                    BookID = String.valueOf(dataSnapshot.child("bookid").getValue(Integer.class));
                     BookDesc = dataSnapshot.child("bookdesc").getValue(String.class);
                     BookLanguage = dataSnapshot.child("booklang").getValue(String.class);
 

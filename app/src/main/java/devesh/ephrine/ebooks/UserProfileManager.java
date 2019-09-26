@@ -30,7 +30,7 @@ import java.util.HashMap;
 public class UserProfileManager {
 
 
-    public String TAG = String.valueOf(R.string.app_name);
+    public String TAG = "UserProfileManager.java\n"+String.valueOf(R.string.app_name);
     public String UserUID;
     public String UserPhno;
     public String UserName;
@@ -178,7 +178,7 @@ public class UserProfileManager {
 
 
         // Read from the database
-        DatabaseReference MyLibraryBooksDB = database.getReference("ebooksapp/users/" + UserUniqueID + "/mylibrary");
+       DatabaseReference MyLibraryBooksDB = database.getReference("ebooksapp/users/" + UserUniqueID + "/mylibrary");
         MyLibraryBooksDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -211,7 +211,7 @@ public class UserProfileManager {
                                     String BookCategory = dataSnapshot.child("bookcategory").getValue(String.class);
                                     String BookCover = dataSnapshot.child("bookcover").getValue(String.class);
                                     String BookURL = dataSnapshot.child("bookurl").getValue(String.class);
-                                    String BookID = dataSnapshot.child("bookid").getValue(String.class);
+                                    String BookID = String.valueOf(dataSnapshot.child("bookid").getValue(Integer.class));
 
                                     bk.put("bookid", BookID);
                                     bk.put("bookname", BookName);

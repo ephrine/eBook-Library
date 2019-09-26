@@ -5,7 +5,7 @@
   ~ Website: https://www.ephrine.in
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -16,6 +16,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/appbar1"
         android:theme="@style/AppTheme.AppBarOverlay"
         android:weightSum="1">
 
@@ -28,24 +29,35 @@
         <!--?attr/actionBarSize-->
     </com.google.android.material.appbar.AppBarLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBarHome"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_below="@id/appbar1"
         android:weightSum="1">
 
         <include
-                android:id="@+id/includeHome"
-                layout="@layout/content_home" />
-            <include
-                android:id="@+id/includeMyAccount"
-                layout="@layout/myaccount"
-                android:visibility="gone" />
+            android:id="@+id/includeHome"
+            layout="@layout/content_home"
+            android:visibility="gone" />
 
-            <include
-                android:id="@+id/includeMyLibrary"
-                layout="@layout/my_book_library"
-                android:visibility="gone" />
+        <include
+            android:id="@+id/includeMyAccount"
+            layout="@layout/myaccount"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/includeMyLibrary"
+            layout="@layout/my_book_library"
+            android:visibility="visible" />
 
         <include
             android:id="@+id/includeAbout"
@@ -55,4 +67,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

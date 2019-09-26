@@ -7,12 +7,19 @@
 package devesh.ephrine.ebooks;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,23 +34,29 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import  devesh.ephrine.ebooks.mRecycleView.MyAdapter;
 import  devesh.ephrine.ebooks.mRecycleView.MyLibraryAdapter;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public String TAG = String.valueOf(R.string.app_name);
-    public UserProfileManager mUser;
+  //  public UserProfileManager mUser;
     ArrayList<HashMap<String, String>> StoreBooksList = new ArrayList();
     RecyclerView recyclerView;
     RecyclerView myLibraryBooksrecyclerView;
@@ -54,6 +67,16 @@ public class HomeActivity extends AppCompatActivity
     View includeAccountView;
     View includeMyLibraryBooks;
     View includeAbout;
+
+    FirebaseDatabase database;
+
+    ArrayList<HashMap<String, String>> MyLibraryBookHashmap = new ArrayList();
+    String UserUniqueID;
+    String UserPhno;
+    ProgressBar HomeLoading;
+
+    UserProfileManager mUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,9 +84,25 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        database = FirebaseDatabase.getInstance();
 
-        mUser = new UserProfileManager(this);
-        //  mUser.Download();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            // already signed in
+
+
+            UserPhno = auth.getCurrentUser().getPhoneNumber();
+
+                       UserUniqueID = UserPhno.replace("+", "x");
+            mUser = new UserProfileManager(this);
+
+
+        } else {
+
+            // not signed in
+
+        }
+
 
         includeHomeView = (View) findViewById(R.id.includeHome);
         includeAccountView = (View) findViewById(R.id.includeMyAccount);
@@ -71,24 +110,26 @@ public class HomeActivity extends AppCompatActivity
         includeAbout = (View) findViewById(R.id.includeAbout);
 
         includeAccountView.setVisibility(View.GONE);
-        includeMyLibraryBooks.setVisibility(View.GONE);
+        includeMyLibraryBooks.setVisibility(View.VISIBLE);
         includeAbout.setVisibility(View.GONE);
-
+        includeHomeView.setVisibility(View.GONE);
         if (includeAccountView.getVisibility() != View.GONE) {
 
         }
-
-
+         HomeLoading=(ProgressBar)findViewById(R.id.progressBarHome);
+HomeLoading.setVisibility(View.VISIBLE);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+        navigationView.getMenu().getItem(0).setChecked(true);
         navigationView.setNavigationItemSelectedListener(this);
 
-        loadbooks();
-
+       // loadbooks();
+     //   myLibraryBooksrecyclerView.removeAllViews();
+        LoadMyLibrary();
 
 
 
@@ -124,14 +165,14 @@ public class HomeActivity extends AppCompatActivity
 
             includeMyLibraryBooks = (View) findViewById(R.id.includeMyLibrary);
             if(includeHomeView.getVisibility()!=View.GONE){
-                recyclerView.removeAllViews();
+               // recyclerView.removeAllViews();
                 loadbooks();
             }
             if(includeAccountView.getVisibility()!=View.GONE){
                 LoadMyAccount();
             }
             if(includeMyLibraryBooks.getVisibility()!=View.GONE){
-                myLibraryBooksrecyclerView.removeAllViews();
+              //  myLibraryBooksrecyclerView.removeAllViews();
                 LoadMyLibrary();
             }
             return true;
@@ -172,12 +213,9 @@ public class HomeActivity extends AppCompatActivity
 
             loadbooks();
 
-        } else if (id == R.id.paymentMenu) {
-            Intent intent = new Intent(this, PaymentActivity.class);
+        } else if (id == R.id.settingMenu) {
 
-            //  String message = editText.getText().toString();
-            //intent.putExtra(EXTRA_MESSAGE, message);
-            startActivity(intent);
+
 
         } else if (id == R.id.includeMyAccount) {
             includeHomeView.setVisibility(View.GONE);
@@ -201,7 +239,6 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
     public void LoadMyAccount() {
 
         if (includeAccountView.getVisibility() == View.VISIBLE) {
@@ -215,7 +252,7 @@ public class HomeActivity extends AppCompatActivity
             TextView UserEmailTx = (TextView) findViewById(R.id.myAccountEmailIdtextView9);
             TextView UserAgeTx = (TextView) findViewById(R.id.myAccountAgetextView8);
 
-            if (mUser.UserName != null) {
+           if (mUser.UserName != null) {
                 UserNameTX.setText(mUser.UserName);
             } else {
                 UserNameTX.setText(" ");
@@ -268,9 +305,24 @@ public class HomeActivity extends AppCompatActivity
             ph.put("UserPhoneNo", mUser.UserPhno);
 
             mUser.UpdateProfile(ph);
+
             myAccountEdit.setVisibility(View.GONE);
             myAccountView.setVisibility(View.VISIBLE);
             LoadMyAccount();
+
+            TextView UserNameTX = (TextView) findViewById(R.id.myAccountUserNametextView6);
+            TextView UserEmailTx = (TextView) findViewById(R.id.myAccountEmailIdtextView9);
+            TextView UserAgeTx = (TextView) findViewById(R.id.myAccountAgetextView8);
+
+            if(ph.get("UserName")!=null){
+                UserNameTX.setText(ph.get("UserName"));
+            }
+            if(ph.get("UserEmail")!=null) {
+                UserEmailTx.setText(ph.get("UserEmail"));
+            }
+            if(ph.get("UserAge")!=null) {
+                UserAgeTx.setText(ph.get("UserAge"));
+            }
 
         }
 
@@ -288,11 +340,12 @@ public class HomeActivity extends AppCompatActivity
             TextInputEditText UserEmailET = (TextInputEditText) findViewById(R.id.UserEmailTextInput);
             TextInputEditText UserAgeET = (TextInputEditText) findViewById(R.id.UserAgeTextInput);
 
-            if (mUser.UserName != null) {
+           if (mUser.UserName != null) {
                 UserNameET.setText(mUser.UserName);
             } else {
                 UserNameET.setText("");
             }
+
 
             if (mUser.UserEmail != null) {
                 UserEmailET.setText(mUser.UserEmail);
@@ -383,11 +436,22 @@ public void billing(){
 
 */
 
+    SmoothProgressBar smoothProgressBar;
     private void loadbooks() {
 
         if (includeHomeView.getVisibility() != View.GONE) {
 
-            recyclerView = (RecyclerView) findViewById(R.id.mRecycleView);
+            WebView myWebView = (WebView) findViewById(R.id.webView1);
+            smoothProgressBar=(SmoothProgressBar)findViewById(R.id.progressBarhorizontal1);
+
+            myWebView.loadUrl(getString(R.string.Book_Store_url));
+            WebSettings webSettings = myWebView.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+
+            myWebView.setWebViewClient(new MyWebViewClient());
+
+
+      /*     recyclerView = (RecyclerView) findViewById(R.id.mRecycleView);
             recyclerView.removeAllViews();
             recyclerView.removeAllViewsInLayout();
             // use this setting to improve performance if you know that changes
@@ -412,6 +476,8 @@ public void billing(){
                     //   String value = dataSnapshot.getValue(String.class);
                     //   Log.d(TAG, "Value is: " + value);
                     StoreBooksList.clear();
+
+
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
                         HashMap<String, String> StoreBook = new HashMap<String, String>();
@@ -422,7 +488,7 @@ public void billing(){
                         String BookCategory = postSnapshot.child("bookcategory").getValue(String.class);
                         String BookCover = postSnapshot.child("bookcover").getValue(String.class);
                         String BookURL = postSnapshot.child("bookurl").getValue(String.class);
-                        String BookID = postSnapshot.child("bookid").getValue(String.class);
+                        String BookID = String.valueOf(postSnapshot.child("bookid").getValue(Integer.class));
 
 
                         StoreBook.put("bookname", BookName);
@@ -455,21 +521,23 @@ public void billing(){
                     // Failed to read value
                     Log.w(TAG, "Failed to read value.", error.toException());
                 }
-            });
+            });    */
+
 
         }
 
     }
 
 
+
+
     public void LoadMyLibrary() {
 
 
         if (includeMyLibraryBooks.getVisibility() != View.GONE) {
-
             myLibraryBooksrecyclerView = (RecyclerView) findViewById(R.id.myBookLibraryRecycleView);
-            myLibraryBooksrecyclerView.removeAllViews();
-            myLibraryBooksrecyclerView.removeAllViewsInLayout();
+           // myLibraryBooksrecyclerView.removeAllViews();
+           // myLibraryBooksrecyclerView.removeAllViewsInLayout();
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
             myLibraryBooksrecyclerView.setHasFixedSize(true);
@@ -478,13 +546,96 @@ public void billing(){
 //            myLibraryBooksrecyclerView.setLayoutManager(layoutManager);
             myLibraryBooksrecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
             // specify an adapter (see also next example)
-            MyLibraryAdapter = new MyLibraryAdapter(HomeActivity.this, mUser.GetMyBooksLibrary());
-            myLibraryBooksrecyclerView.setAdapter(MyLibraryAdapter);
 
+            DatabaseReference MyLibraryBooksDB = database.getReference("ebooksapp/users/" + UserUniqueID + "/mylibrary");
+            MyLibraryBooksDB.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // This method is called once with the initial value and again
+                    // whenever data at this location is updated.
+                    //   String value = dataSnapshot.getValue(String.class);
+                    if (dataSnapshot != null) {
+                        MyLibraryBookHashmap.clear();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            String BookID = "null";
+                            if (postSnapshot.child("bookid").getValue(String.class) != null) {
+                                BookID = postSnapshot.child("bookid").getValue(String.class);
+                                //MyLibraryBookList.add(BookID);
+
+                                DatabaseReference GetBookDB;
+                                GetBookDB = FirebaseDatabase.getInstance().getReference("ebooksapp/library/books/" + BookID);
+                                GetBookDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        // This method is called once with the initial value and again
+                                        // whenever data at this location is updated.
+                                        //   String value = dataSnapshot.getValue(String.class);
+                                        //   Log.d(TAG, "Value is: " + value);
+
+                                        HashMap<String, String> bk = new HashMap<String, String>();
+
+                                        String BookName = dataSnapshot.child("bookname").getValue(String.class);
+                                        String BookAuthor = dataSnapshot.child("bookauthor").getValue(String.class);
+                                        String BookYear = dataSnapshot.child("bookyear").getValue(String.class);
+                                        String BookCategory = dataSnapshot.child("bookcategory").getValue(String.class);
+                                        String BookCover = dataSnapshot.child("bookcover").getValue(String.class);
+                                        String BookURL = dataSnapshot.child("bookurl").getValue(String.class);
+                                        String BookID = String.valueOf(dataSnapshot.child("bookid").getValue(Integer.class));
+
+                                        bk.put("bookid", BookID);
+                                        bk.put("bookname", BookName);
+                                        bk.put("bookauthor", BookAuthor);
+                                        bk.put("bookyear", BookYear);
+                                        bk.put("bookcategory", BookCategory);
+                                        bk.put("bookcover", BookCover);
+                                        bk.put("bookurl", BookURL);
+
+                                        MyLibraryBookHashmap.add(bk);
+
+                                        Log.d(TAG, "-------------------onDataChange:\n Book Details:\nBookID:" + BookID + "\nMyLibraryBookHashmap\n" + MyLibraryBookHashmap);
+
+                                        myLibraryBooksrecyclerView.removeAllViews();
+                                        myLibraryBooksrecyclerView.removeAllViewsInLayout();
+
+                                        MyLibraryAdapter = new MyLibraryAdapter(HomeActivity.this, MyLibraryBookHashmap);
+                                        myLibraryBooksrecyclerView.setAdapter(MyLibraryAdapter);
+                                        HomeLoading.setVisibility(View.GONE);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError error) {
+                                        // Failed to read value
+                                        Log.w(TAG, "Failed to read value.", error.toException());
+                                    }
+                                });
+
+                            }
+                            Log.i(TAG, "onDataChange: ------------------\n Get User Library\n" + BookID + "\n");
+                            //Log.i(TAG, "onDataChange: ------------------\n My Book Library\n" + MyLibraryBookList);
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
+            MyLibraryBooksDB.keepSynced(true);
+
+
+
+        }else {
+            HomeLoading.setVisibility(View.GONE);
 
         }
 
     }
+
+
+
 
 
     @Override
@@ -498,5 +649,43 @@ public void billing(){
 
 
         super.onStart();
+    }
+
+    private class MyWebViewClient extends WebViewClient {
+        /*@Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if ("bitvedas-13cc3.web.app".equals(Uri.parse(url).getHost())) {
+                // This is my website, so do not override; let my WebView load the page
+                return false;
+            }else if ("ephrine.in".equals(Uri.parse(url).getHost())) {
+                // This is my website, so do not override; let my WebView load the page
+                return false;
+            }
+
+
+            // Otherwise, the link is not for a page on my site, so launch another Activity that handles URLs
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+            return true;
+        }
+
+
+      */  public void onPageFinished(WebView view, String url) {
+            // do your stuff here
+            if (includeHomeView.getVisibility() != View.GONE) {
+                smoothProgressBar.setVisibility(View.GONE);
+            }
+            Log.d(TAG, "onPageFinished: " + url);
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            if (includeHomeView.getVisibility() != View.GONE) {
+                smoothProgressBar.setVisibility(View.VISIBLE);
+            }
+            Log.d(TAG, "onPageStarted: " + url);
+
+        }
     }
 }

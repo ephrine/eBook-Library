@@ -84,7 +84,7 @@ public class BookViewActivity extends AppCompatActivity {
                     BookCategory = dataSnapshot.child("bookcategory").getValue(String.class);
                     BookCover = dataSnapshot.child("bookcover").getValue(String.class);
                     BookURL = dataSnapshot.child("bookurl").getValue(String.class);
-                    BookID = dataSnapshot.child("bookid").getValue(String.class);
+                    BookID = String.valueOf(dataSnapshot.child("bookid").getValue(Integer.class));
                     BookDesc = dataSnapshot.child("bookdesc").getValue(String.class);
                     BookLanguage = dataSnapshot.child("booklang").getValue(String.class);
 
