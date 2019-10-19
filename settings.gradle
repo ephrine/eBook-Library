@@ -1,2 +1,2 @@
-include ':pre_alpha', ':payment_demo', ':app', ':bookstore'
+include ':app'
 

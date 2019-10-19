@@ -44,6 +44,13 @@
         android:layout_below="@id/appbar1"
         android:weightSum="1">
 
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="pay"
+            android:text="pay " />
+
         <include
             android:id="@+id/includeHome"
             layout="@layout/content_home"

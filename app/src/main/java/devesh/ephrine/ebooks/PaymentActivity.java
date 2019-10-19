@@ -20,12 +20,15 @@ public class PaymentActivity extends AppCompatActivity implements BillingProcess
     public String TAG = "Payment";
     BillingProcessor bp;
 
+    String ProductId="001";
+    String LICENSE_KEY="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnFGhosMBk28VLfMXhRDe4ZXpqCYGxSmGYSLmpjJxjNlvubEecRnhbEGghCXs/tIPaNRSR7Oow2J1HUAjmd04AZRI3FxKsdTmpwa2rJUu9BaR7yrqvNzMchfLieKPkiyVnTa7QrUHOX4S168KUSf6lbgPkqspgoRCwT446pzYpKlRFkQGIH/ZGd0Wblpze+vIjhctzYcrzmzaTisRCyK0QJRt5n6fQeCCS+3iVeqpHctD5gSe6Fqkz7q2lmbyEXkKXlYmcNrvtHm6eonolVi1rqmEZBGLOeI3DoBTuvn71QMChKx+Y9DRwVynARG1VhFhvmuOpr8hjDMUknNj7aSAdwIDAQAB";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
 
-        bp = new BillingProcessor(this, null, this);
+        bp = new BillingProcessor(this, LICENSE_KEY, this);
         bp.initialize();
         // or bp = BillingProcessor.newBillingProcessor(this, "YOUR LICENSE KEY FROM GOOGLE PLAY CONSOLE HERE", this);
         // See below on why this is a useful alternative
@@ -42,7 +45,7 @@ public class PaymentActivity extends AppCompatActivity implements BillingProcess
         // bp.getPurchaseTransactionDetails("android.test.purchased");
 
 
-        if (bp.isPurchased("android.test.purchased")) {
+        if (bp.isPurchased(ProductId)) {
             Log.d(TAG, "onBillingInitialized: Already Purchased");
         } else {
             Log.d(TAG, "onBillingInitialized: Not Purchased");
@@ -103,8 +106,8 @@ public class PaymentActivity extends AppCompatActivity implements BillingProcess
     }
 
     public void Pay(View v) {
-        // bp.subscribe(this, "android.test.purchased");
-        bp.purchase(this, "android.test.purchased");
+         bp.subscribe(this, ProductId);
+       // bp.purchase(this, "android.test.purchased");
 
     }
 

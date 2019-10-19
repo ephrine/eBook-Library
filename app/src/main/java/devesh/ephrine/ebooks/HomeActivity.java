@@ -44,6 +44,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,6 +78,8 @@ public class HomeActivity extends AppCompatActivity
 
     UserProfileManager mUser;
 
+    DataSnapshot BookLibraryDB;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +88,7 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         database = FirebaseDatabase.getInstance();
+
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
@@ -441,14 +445,7 @@ public void billing(){
 
         if (includeHomeView.getVisibility() != View.GONE) {
 
-            WebView myWebView = (WebView) findViewById(R.id.webView1);
-            smoothProgressBar=(SmoothProgressBar)findViewById(R.id.progressBarhorizontal1);
-
-            myWebView.loadUrl(getString(R.string.Book_Store_url));
-            WebSettings webSettings = myWebView.getSettings();
-            webSettings.setJavaScriptEnabled(true);
-
-            myWebView.setWebViewClient(new MyWebViewClient());
+            LoadWebViewContent(getString(R.string.Book_Store_url)+"?uid="+UserUniqueID);
 
 
       /*     recyclerView = (RecyclerView) findViewById(R.id.mRecycleView);
@@ -556,6 +553,9 @@ public void billing(){
                     //   String value = dataSnapshot.getValue(String.class);
                     if (dataSnapshot != null) {
                         MyLibraryBookHashmap.clear();
+                        BookLibraryDB=dataSnapshot;
+                  //      GetDirFiles();
+
                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                             String BookID = "null";
                             if (postSnapshot.child("bookid").getValue(String.class) != null) {
@@ -651,6 +651,27 @@ public void billing(){
         super.onStart();
     }
 
+    void LoadWebViewContent(String url){
+
+        String URL=url;
+
+        WebView myWebView = (WebView) findViewById(R.id.webView1);
+        smoothProgressBar=(SmoothProgressBar)findViewById(R.id.progressBarhorizontal1);
+        myWebView.loadUrl("about:blank");
+        myWebView.loadUrl(URL);
+        WebSettings webSettings = myWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setAppCacheEnabled(true);
+        webSettings.setAllowContentAccess(true);
+        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setDatabaseEnabled(true);
+        webSettings.setGeolocationEnabled(true);
+        webSettings.setLoadsImagesAutomatically(true);
+        myWebView.setWebViewClient(new MyWebViewClient());
+
+    }
+
     private class MyWebViewClient extends WebViewClient {
         /*@Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -688,4 +709,44 @@ public void billing(){
 
         }
     }
+
+    void GetDirFiles(){
+// Currently Not Using
+
+        File directory = new File(this.getFilesDir(),"");
+
+        File[] files = directory.listFiles();
+        Log.d("Files", "Size: "+ files.length);
+        for (int i = 0; i < files.length; i++)
+        {
+
+            String key="x";
+
+            for (DataSnapshot postSnapshot : BookLibraryDB.getChildren()) {
+                String BI="eBook"+postSnapshot.child("bookid").getValue(String.class)+ ".pdf";
+                if(files[i].getName().equals(BI)){
+                    Log.d(TAG, "GetDirFiles: Same File on Cloud:"+BI);
+                }else {
+                    key="Deleted Book";
+                    File localFile = new File(this.getFilesDir(), files[i].getName());
+                    localFile.delete();
+                    Log.d("Files", "GetDirFiles: Delete: "+localFile);
+                }
+            }
+
+            Log.d("Files", "FileName:" + files[i].getName()+"\n key:"+key+"\n----");
+
+        }
+
+    }
+
+
+    public void pay(View v){
+        Intent intent = new Intent(this, PaymentActivity.class);
+
+              //  String message = editText.getText().toString();
+                //intent.putExtra(EXTRA_MESSAGE, message);
+                startActivity(intent);
+    }
+
 }

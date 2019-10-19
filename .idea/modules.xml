@@ -3,10 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/bookstore/bookstore.iml" filepath="$PROJECT_DIR$/bookstore/bookstore.iml" />
       <module fileurl="file://$PROJECT_DIR$/eBook Library.iml" filepath="$PROJECT_DIR$/eBook Library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/payment_demo/payment_demo.iml" filepath="$PROJECT_DIR$/payment_demo/payment_demo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/pre_alpha/pre_alpha.iml" filepath="$PROJECT_DIR$/pre_alpha/pre_alpha.iml" />
     </modules>
   </component>
 </project>
