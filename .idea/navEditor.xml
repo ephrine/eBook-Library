@@ -49,6 +49,11 @@
             </LayoutPositions>
           </value>
         </entry>
+        <entry key="nav.xml">
+          <value>
+            <LayoutPositions />
+          </value>
+        </entry>
       </map>
     </option>
   </component>

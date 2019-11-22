@@ -1,0 +1,88 @@
+<!--
+  ~ Copyright (c) 2019. Ephrine Apps
+  ~ Code written by Devesh Chaudhari
+  ~ Website: https://www.ephrine.in
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Preference
+        android:key="n"
+        android:layout="@layout/setting_header"
+        android:title="about" />
+
+    <PreferenceCategory app:title="@string/messages_header">
+
+        <Preference
+            app:key="pref_userphno"
+            app:summary="0"
+            app:title="Phone Number"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            app:key="pref_username"
+            app:title="@string/signature_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="pref_useremail"
+            app:title="Email"
+            app:useSimpleSummaryProvider="true" />
+
+
+        <EditTextPreference
+            app:key="pref_userage"
+            app:title="Age"
+            app:useSimpleSummaryProvider="true" />
+
+        <!--     <ListPreference
+            app:entries="@array/gender"
+            app:entryValues="@array/gender_values"
+            app:key="pref_usergender"
+            app:title="Gender"
+            app:useSimpleSummaryProvider="true" />
+-->
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/sync_header">
+
+        <Preference
+            app:key="deletebooks"
+            app:summary="Free up your Storage by removing stored offline books on device"
+            app:title="Remove Offline Books"
+            app:useSimpleSummaryProvider="true" />
+        <Preference
+            app:key="signout"
+            app:summary="Sign Out of my Account on this Device"
+            app:title="Sign Out"
+            app:useSimpleSummaryProvider="true" />
+
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="About">
+        <Preference
+            app:key="about"
+            app:summary="@string/app_desc1"
+            app:title="About"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            app:key="contact"
+            app:title="Contact us"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            app:key="privacyp"
+            app:title="@string/fui_privacy_policy"
+            app:useSimpleSummaryProvider="true" />
+
+
+        <Preference
+            app:key="epwebsite"
+            app:summary="https://www.ephrine.in"
+            app:title="Official Website"
+            app:useSimpleSummaryProvider="true" />
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

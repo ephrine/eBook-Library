@@ -87,8 +87,8 @@ public class MyLibraryAdapter extends RecyclerView.Adapter<MyLibraryAdapter.MyVi
         holder.LLBook.setTag(mDataset.get(position).get("bookid"));
         //  holder.AddToLibraryChip.setTag(mDataset.get(position).get("bookid"));
 
-      //  holder.BookTitleTx.setText(ReadBookName);
-      //  holder.BookAuthorTx.setText("By " + ReadBookAuthor);
+        //  holder.BookTitleTx.setText(ReadBookName);
+        //  holder.BookAuthorTx.setText("By " + ReadBookAuthor);
 
         Glide.with(holder.BookCoverPic)
                 .load(mDataset.get(position).get("bookcover"))

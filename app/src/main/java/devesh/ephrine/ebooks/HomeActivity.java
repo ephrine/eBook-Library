@@ -6,11 +6,13 @@
 
 package devesh.ephrine.ebooks;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,16 +25,19 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.multidex.MultiDex;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.navigation.NavigationView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -40,24 +45,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import  devesh.ephrine.ebooks.mRecycleView.MyAdapter;
-import  devesh.ephrine.ebooks.mRecycleView.MyLibraryAdapter;
+import devesh.ephrine.ebooks.mRecycleView.MyAdapter;
+import devesh.ephrine.ebooks.mRecycleView.MyLibraryAdapter;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
-public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class HomeActivity extends AppCompatActivity {
 
     public String TAG = String.valueOf(R.string.app_name);
-  //  public UserProfileManager mUser;
+    //  public UserProfileManager mUser;
     ArrayList<HashMap<String, String>> StoreBooksList = new ArrayList();
     RecyclerView recyclerView;
     RecyclerView myLibraryBooksrecyclerView;
@@ -79,27 +79,141 @@ public class HomeActivity extends AppCompatActivity
     UserProfileManager mUser;
 
     DataSnapshot BookLibraryDB;
+    BottomNavigationView navigation;
+
+    AdRequest adRequest;
+    SmoothProgressBar smoothProgressBar;
+    AdView mAdView;
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.MyLibraryMenu:
+
+                    getSupportFragmentManager().popBackStack();
+
+                    includeHomeView.setVisibility(View.GONE);
+                    includeAccountView.setVisibility(View.GONE);
+                    includeMyLibraryBooks.setVisibility(View.VISIBLE);
+                    includeAbout.setVisibility(View.GONE);
+
+                    LoadMyLibrary();
+                    //     navigation.setSelectedItemId(R.id.MyLibraryMenu);
+
+
+                    break;
+
+                case R.id.BrowseStoreMenu:
+
+                    getSupportFragmentManager().popBackStack();
+
+                    includeHomeView.setVisibility(View.VISIBLE);
+                    includeAccountView.setVisibility(View.GONE);
+                    includeMyLibraryBooks.setVisibility(View.GONE);
+                    includeAbout.setVisibility(View.GONE);
+
+                    loadbooks();
+
+
+                    break;
+
+                case R.id.settingMenu:
+
+           /*         includeHomeView.setVisibility(View.GONE);
+                    includeAccountView.setVisibility(View.GONE);
+                    includeMyLibraryBooks.setVisibility(View.GONE);
+                    includeAbout.setVisibility(View.GONE);
+*/
+                    getSupportFragmentManager()
+                            .beginTransaction()
+
+                            .replace(R.id.settings_container, new SettingsFragment())
+                            .addToBackStack(null)
+                            .commit();
+
+                    break;
+
+
+            }
+            /*
+            if (item.getItemId() == R.id.MyLibraryMenu) {
+
+            }
+            else if (item.getItemId() == R.id.myAccountMenu) {
+                getSupportFragmentManager().popBackStack();
+
+                includeHomeView.setVisibility(View.GONE);
+                includeAccountView.setVisibility(View.VISIBLE);
+                includeMyLibraryBooks.setVisibility(View.GONE);
+                includeAbout.setVisibility(View.GONE);
+
+                LoadMyAccount();
+                navigation.setSelectedItemId(R.id.myAccountMenu);
+
+
+            } else if (item.getItemId() == R.id.BrowseStoreMenu) {
+                navigation.setSelectedItemId(R.id.BrowseStoreMenu);
+
+
+
+            } else if (item.getItemId() == R.id.settingMenu) {
+                 navigation.setSelectedItemId(R.id.settingMenu);
+
+            } else if (item.getItemId() == R.id.includeMyAccount) {
+
+                includeHomeView.setVisibility(View.GONE);
+                includeAccountView.setVisibility(View.VISIBLE);
+                includeMyLibraryBooks.setVisibility(View.GONE);
+                includeAbout.setVisibility(View.GONE);
+          //      navigation.setSelectedItemId(R.id.includeMyAccount);
+
+            }
+            else if (item.getItemId() == R.id.AboutMenu) {
+                getSupportFragmentManager().popBackStack();
+
+                includeHomeView.setVisibility(View.GONE);
+                includeAccountView.setVisibility(View.GONE);
+                includeMyLibraryBooks.setVisibility(View.GONE);
+                includeAbout.setVisibility(View.VISIBLE);
+
+            }*/
+
+            return true;
+        }
+    };
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_home);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_main);
+
+        adRequest = new AdRequest.Builder().build();
+
+        //     Toolbar toolbar = findViewById(R.id.toolbar);
+        //    setSupportActionBar(toolbar);
+        MobileAds.initialize(this, getString(R.string.AdMob_App_Id));
+        loadAds();
+
+
         database = FirebaseDatabase.getInstance();
 
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
-            // already signed in
-
 
             UserPhno = auth.getCurrentUser().getPhoneNumber();
 
-                       UserUniqueID = UserPhno.replace("+", "x");
+            UserUniqueID = UserPhno.replace("+", "x");
             mUser = new UserProfileManager(this);
-
 
         } else {
 
@@ -120,9 +234,10 @@ public class HomeActivity extends AppCompatActivity
         if (includeAccountView.getVisibility() != View.GONE) {
 
         }
-         HomeLoading=(ProgressBar)findViewById(R.id.progressBarHome);
-HomeLoading.setVisibility(View.VISIBLE);
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        HomeLoading = (ProgressBar) findViewById(R.id.progressBarHome);
+        HomeLoading.setVisibility(View.VISIBLE);
+
+  /*      DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -130,25 +245,101 @@ HomeLoading.setVisibility(View.VISIBLE);
         toggle.syncState();
         navigationView.getMenu().getItem(0).setChecked(true);
         navigationView.setNavigationItemSelectedListener(this);
+*/
+        // loadbooks();
+        //   myLibraryBooksrecyclerView.removeAllViews();
 
-       // loadbooks();
-     //   myLibraryBooksrecyclerView.removeAllViews();
+        navigation = (BottomNavigationView) findViewById(R.id.BottomNavBar);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
         LoadMyLibrary();
 
 
-
     }
 
+  /*  @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
 
+        if (id == R.id.MyLibraryMenu) {
+            getSupportFragmentManager().popBackStack();
+
+            includeHomeView.setVisibility(View.GONE);
+            includeAccountView.setVisibility(View.GONE);
+            includeMyLibraryBooks.setVisibility(View.VISIBLE);
+            includeAbout.setVisibility(View.GONE);
+
+            LoadMyLibrary();
+
+        } else if (id == R.id.myAccountMenu) {
+            getSupportFragmentManager().popBackStack();
+
+            includeHomeView.setVisibility(View.GONE);
+            includeAccountView.setVisibility(View.VISIBLE);
+            includeMyLibraryBooks.setVisibility(View.GONE);
+            includeAbout.setVisibility(View.GONE);
+
+            LoadMyAccount();
+
+        } else if (id == R.id.BrowseStoreMenu) {
+            getSupportFragmentManager().popBackStack();
+
+            includeHomeView.setVisibility(View.VISIBLE);
+            includeAccountView.setVisibility(View.GONE);
+            includeMyLibraryBooks.setVisibility(View.GONE);
+            includeAbout.setVisibility(View.GONE);
+
+            loadbooks();
+
+
+
+        } else if (id == R.id.settingMenu) {
+            includeHomeView.setVisibility(View.GONE);
+            includeAccountView.setVisibility(View.GONE);
+            includeMyLibraryBooks.setVisibility(View.GONE);
+            includeAbout.setVisibility(View.GONE);
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+
+                    .replace(R.id.settings_container, new SettingsFragment())
+                    .addToBackStack(null)
+                    .commit();
+
+        } else if (id == R.id.includeMyAccount) {
+
+            includeHomeView.setVisibility(View.GONE);
+            includeAccountView.setVisibility(View.VISIBLE);
+            includeMyLibraryBooks.setVisibility(View.GONE);
+            includeAbout.setVisibility(View.GONE);
+
+        }
+        else if (id == R.id.AboutMenu) {
+            getSupportFragmentManager().popBackStack();
+
+            includeHomeView.setVisibility(View.GONE);
+            includeAccountView.setVisibility(View.GONE);
+            includeMyLibraryBooks.setVisibility(View.GONE);
+            includeAbout.setVisibility(View.VISIBLE);
+
+        }
+
+        /* else if (id == R.id.nav_send) {
+        }*/
+
+    /*  @Override
+      public void onBackPressed() {
+          DrawerLayout drawer = findViewById(R.id.drawer_layout);
+          if (drawer.isDrawerOpen(GravityCompat.START)) {
+              drawer.closeDrawer(GravityCompat.START);
+          } else {
+              super.onBackPressed();
+          }
+      }
+  */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -168,15 +359,15 @@ HomeLoading.setVisibility(View.VISIBLE);
             Toast.makeText(this, "Refreshing....", Toast.LENGTH_SHORT).show();
 
             includeMyLibraryBooks = (View) findViewById(R.id.includeMyLibrary);
-            if(includeHomeView.getVisibility()!=View.GONE){
-               // recyclerView.removeAllViews();
+            if (includeHomeView.getVisibility() != View.GONE) {
+                // recyclerView.removeAllViews();
                 loadbooks();
             }
-            if(includeAccountView.getVisibility()!=View.GONE){
+            if (includeAccountView.getVisibility() != View.GONE) {
                 LoadMyAccount();
             }
-            if(includeMyLibraryBooks.getVisibility()!=View.GONE){
-              //  myLibraryBooksrecyclerView.removeAllViews();
+            if (includeMyLibraryBooks.getVisibility() != View.GONE) {
+                //  myLibraryBooksrecyclerView.removeAllViews();
                 LoadMyLibrary();
             }
             return true;
@@ -185,64 +376,12 @@ HomeLoading.setVisibility(View.VISIBLE);
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+    /*      DrawerLayout drawer = findViewById(R.id.drawer_layout);
+          drawer.closeDrawer(GravityCompat.START);
+          return true;
+      }
 
-        if (id == R.id.MyLibraryMenu) {
-            // Handle the camera action
-            includeHomeView.setVisibility(View.GONE);
-            includeAccountView.setVisibility(View.GONE);
-            includeMyLibraryBooks.setVisibility(View.VISIBLE);
-            includeAbout.setVisibility(View.GONE);
-
-            LoadMyLibrary();
-
-        } else if (id == R.id.myAccountMenu) {
-
-            includeHomeView.setVisibility(View.GONE);
-            includeAccountView.setVisibility(View.VISIBLE);
-            includeMyLibraryBooks.setVisibility(View.GONE);
-            includeAbout.setVisibility(View.GONE);
-
-            LoadMyAccount();
-
-        } else if (id == R.id.BrowseStoreMenu) {
-            includeHomeView.setVisibility(View.VISIBLE);
-            includeAccountView.setVisibility(View.GONE);
-            includeMyLibraryBooks.setVisibility(View.GONE);
-            includeAbout.setVisibility(View.GONE);
-
-            loadbooks();
-
-        } else if (id == R.id.settingMenu) {
-
-
-
-        } else if (id == R.id.includeMyAccount) {
-            includeHomeView.setVisibility(View.GONE);
-            includeAccountView.setVisibility(View.VISIBLE);
-            includeMyLibraryBooks.setVisibility(View.GONE);
-            includeAbout.setVisibility(View.GONE);
-
-        }
-        else if (id == R.id.AboutMenu) {
-            includeHomeView.setVisibility(View.GONE);
-            includeAccountView.setVisibility(View.GONE);
-            includeMyLibraryBooks.setVisibility(View.GONE);
-            includeAbout.setVisibility(View.VISIBLE);
-
-        }
-
-        /* else if (id == R.id.nav_send) {
-        }*/
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
+  */
     public void LoadMyAccount() {
 
         if (includeAccountView.getVisibility() == View.VISIBLE) {
@@ -256,7 +395,7 @@ HomeLoading.setVisibility(View.VISIBLE);
             TextView UserEmailTx = (TextView) findViewById(R.id.myAccountEmailIdtextView9);
             TextView UserAgeTx = (TextView) findViewById(R.id.myAccountAgetextView8);
 
-           if (mUser.UserName != null) {
+            if (mUser.UserName != null) {
                 UserNameTX.setText(mUser.UserName);
             } else {
                 UserNameTX.setText(" ");
@@ -283,88 +422,6 @@ HomeLoading.setVisibility(View.VISIBLE);
 
         }
 
-
-    }
-
-    public void SaveData(View v) {
-        if (includeAccountView.getVisibility() == View.VISIBLE) {
-            LinearLayout myAccountView = (LinearLayout) findViewById(R.id.LLAccountView);
-            LinearLayout myAccountEdit = (LinearLayout) findViewById(R.id.LLAccountEdit);
-
-            HashMap<String, String> ph = new HashMap<String, String>();
-
-            TextInputEditText UserNameET = (TextInputEditText) findViewById(R.id.UserNameTextInput);
-            TextInputEditText UserEmailET = (TextInputEditText) findViewById(R.id.UserEmailTextInput);
-            TextInputEditText UserAgeET = (TextInputEditText) findViewById(R.id.UserAgeTextInput);
-
-            if (UserNameET.getText() != null) {
-                ph.put("UserName", UserNameET.getText().toString());
-            }
-            if (UserEmailET.getText() != null) {
-                ph.put("UserEmail", UserEmailET.getText().toString());
-            }
-            if (UserAgeET.getText() != null) {
-                ph.put("UserAge", UserAgeET.getText().toString());
-            }
-            ph.put("UserPhoneNo", mUser.UserPhno);
-
-            mUser.UpdateProfile(ph);
-
-            myAccountEdit.setVisibility(View.GONE);
-            myAccountView.setVisibility(View.VISIBLE);
-            LoadMyAccount();
-
-            TextView UserNameTX = (TextView) findViewById(R.id.myAccountUserNametextView6);
-            TextView UserEmailTx = (TextView) findViewById(R.id.myAccountEmailIdtextView9);
-            TextView UserAgeTx = (TextView) findViewById(R.id.myAccountAgetextView8);
-
-            if(ph.get("UserName")!=null){
-                UserNameTX.setText(ph.get("UserName"));
-            }
-            if(ph.get("UserEmail")!=null) {
-                UserEmailTx.setText(ph.get("UserEmail"));
-            }
-            if(ph.get("UserAge")!=null) {
-                UserAgeTx.setText(ph.get("UserAge"));
-            }
-
-        }
-
-    }
-
-    public void EditAccount(View v) {
-        LinearLayout myAccountView = (LinearLayout) findViewById(R.id.LLAccountView);
-        LinearLayout myAccountEdit = (LinearLayout) findViewById(R.id.LLAccountEdit);
-        myAccountEdit.setVisibility(View.VISIBLE);
-        myAccountView.setVisibility(View.GONE);
-
-        if (myAccountEdit.getVisibility() != View.GONE) {
-
-            TextInputEditText UserNameET = (TextInputEditText) findViewById(R.id.UserNameTextInput);
-            TextInputEditText UserEmailET = (TextInputEditText) findViewById(R.id.UserEmailTextInput);
-            TextInputEditText UserAgeET = (TextInputEditText) findViewById(R.id.UserAgeTextInput);
-
-           if (mUser.UserName != null) {
-                UserNameET.setText(mUser.UserName);
-            } else {
-                UserNameET.setText("");
-            }
-
-
-            if (mUser.UserEmail != null) {
-                UserEmailET.setText(mUser.UserEmail);
-            } else {
-                UserEmailET.setText("");
-            }
-
-            if (mUser.UserAge != null) {
-                UserAgeET.setText(mUser.UserAge);
-            } else {
-                UserAgeET.setText("");
-            }
-
-
-        }
 
     }
 
@@ -440,12 +497,93 @@ public void billing(){
 
 */
 
-    SmoothProgressBar smoothProgressBar;
+    public void SaveData(View v) {
+        if (includeAccountView.getVisibility() == View.VISIBLE) {
+            LinearLayout myAccountView = (LinearLayout) findViewById(R.id.LLAccountView);
+            LinearLayout myAccountEdit = (LinearLayout) findViewById(R.id.LLAccountEdit);
+
+            HashMap<String, String> ph = new HashMap<String, String>();
+
+            TextInputEditText UserNameET = (TextInputEditText) findViewById(R.id.UserNameTextInput);
+            TextInputEditText UserEmailET = (TextInputEditText) findViewById(R.id.UserEmailTextInput);
+            TextInputEditText UserAgeET = (TextInputEditText) findViewById(R.id.UserAgeTextInput);
+
+            if (UserNameET.getText() != null) {
+                ph.put("UserName", UserNameET.getText().toString());
+            }
+            if (UserEmailET.getText() != null) {
+                ph.put("UserEmail", UserEmailET.getText().toString());
+            }
+            if (UserAgeET.getText() != null) {
+                ph.put("UserAge", UserAgeET.getText().toString());
+            }
+            ph.put("UserPhoneNo", mUser.UserPhno);
+
+            mUser.UpdateProfile(ph);
+
+            myAccountEdit.setVisibility(View.GONE);
+            myAccountView.setVisibility(View.VISIBLE);
+            LoadMyAccount();
+
+            TextView UserNameTX = (TextView) findViewById(R.id.myAccountUserNametextView6);
+            TextView UserEmailTx = (TextView) findViewById(R.id.myAccountEmailIdtextView9);
+            TextView UserAgeTx = (TextView) findViewById(R.id.myAccountAgetextView8);
+
+            if (ph.get("UserName") != null) {
+                UserNameTX.setText(ph.get("UserName"));
+            }
+            if (ph.get("UserEmail") != null) {
+                UserEmailTx.setText(ph.get("UserEmail"));
+            }
+            if (ph.get("UserAge") != null) {
+                UserAgeTx.setText(ph.get("UserAge"));
+            }
+
+        }
+
+    }
+
+    public void EditAccount(View v) {
+        LinearLayout myAccountView = (LinearLayout) findViewById(R.id.LLAccountView);
+        LinearLayout myAccountEdit = (LinearLayout) findViewById(R.id.LLAccountEdit);
+        myAccountEdit.setVisibility(View.VISIBLE);
+        myAccountView.setVisibility(View.GONE);
+
+        if (myAccountEdit.getVisibility() != View.GONE) {
+
+            TextInputEditText UserNameET = (TextInputEditText) findViewById(R.id.UserNameTextInput);
+            TextInputEditText UserEmailET = (TextInputEditText) findViewById(R.id.UserEmailTextInput);
+            TextInputEditText UserAgeET = (TextInputEditText) findViewById(R.id.UserAgeTextInput);
+
+            if (mUser.UserName != null) {
+                UserNameET.setText(mUser.UserName);
+            } else {
+                UserNameET.setText("");
+            }
+
+
+            if (mUser.UserEmail != null) {
+                UserEmailET.setText(mUser.UserEmail);
+            } else {
+                UserEmailET.setText("");
+            }
+
+            if (mUser.UserAge != null) {
+                UserAgeET.setText(mUser.UserAge);
+            } else {
+                UserAgeET.setText("");
+            }
+
+
+        }
+
+    }
+
     private void loadbooks() {
 
         if (includeHomeView.getVisibility() != View.GONE) {
 
-            LoadWebViewContent(getString(R.string.Book_Store_url)+"?uid="+UserUniqueID);
+            LoadWebViewContent(getString(R.string.Book_Store_url) + "?uid=" + UserUniqueID);
 
 
       /*     recyclerView = (RecyclerView) findViewById(R.id.mRecycleView);
@@ -525,16 +663,13 @@ public void billing(){
 
     }
 
-
-
-
     public void LoadMyLibrary() {
 
 
         if (includeMyLibraryBooks.getVisibility() != View.GONE) {
             myLibraryBooksrecyclerView = (RecyclerView) findViewById(R.id.myBookLibraryRecycleView);
-           // myLibraryBooksrecyclerView.removeAllViews();
-           // myLibraryBooksrecyclerView.removeAllViewsInLayout();
+            // myLibraryBooksrecyclerView.removeAllViews();
+            // myLibraryBooksrecyclerView.removeAllViewsInLayout();
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
             myLibraryBooksrecyclerView.setHasFixedSize(true);
@@ -553,8 +688,8 @@ public void billing(){
                     //   String value = dataSnapshot.getValue(String.class);
                     if (dataSnapshot != null) {
                         MyLibraryBookHashmap.clear();
-                        BookLibraryDB=dataSnapshot;
-                  //      GetDirFiles();
+                        BookLibraryDB = dataSnapshot;
+                        //      GetDirFiles();
 
                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                             String BookID = "null";
@@ -625,18 +760,14 @@ public void billing(){
             });
             MyLibraryBooksDB.keepSynced(true);
 
+            loadAds();
 
-
-        }else {
+        } else {
             HomeLoading.setVisibility(View.GONE);
 
         }
 
     }
-
-
-
-
 
     @Override
     public void onDestroy() {
@@ -644,19 +775,12 @@ public void billing(){
         super.onDestroy();
     }
 
-    @Override
-    protected void onStart() {
+    void LoadWebViewContent(String url) {
 
-
-        super.onStart();
-    }
-
-    void LoadWebViewContent(String url){
-
-        String URL=url;
+        String URL = url;
 
         WebView myWebView = (WebView) findViewById(R.id.webView1);
-        smoothProgressBar=(SmoothProgressBar)findViewById(R.id.progressBarhorizontal1);
+        smoothProgressBar = (SmoothProgressBar) findViewById(R.id.progressBarhorizontal1);
         myWebView.loadUrl("about:blank");
         myWebView.loadUrl(URL);
         WebSettings webSettings = myWebView.getSettings();
@@ -669,6 +793,224 @@ public void billing(){
         webSettings.setGeolocationEnabled(true);
         webSettings.setLoadsImagesAutomatically(true);
         myWebView.setWebViewClient(new MyWebViewClient());
+
+    }
+
+    public void pay(View v) {
+        Intent intent = new Intent(this, PaymentActivity.class);
+
+        //  String message = editText.getText().toString();
+        //intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
+    }
+
+    void loadAds() {
+
+        if (findViewById(R.id.adView) != null) {
+
+            mAdView = findViewById(R.id.adView);
+            mAdView.loadAd(adRequest);
+
+        }
+
+
+    }
+
+    public static class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+        public static final String UserName = "pref_username";
+        public static final String UserEmail = "pref_useremail";
+        public String TAG = String.valueOf(R.string.app_name);
+        UserProfileManager mUser;
+
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            //  setPreferencesFromResource(R.xml.root_preferences, rootKey);
+            addPreferencesFromResource(R.xml.root_preferences);
+
+            mUser = new UserProfileManager(getContext());
+            SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
+            Preference pref = findPreference("pref_userphno");
+            pref.setSummary(mUser.UserPhno);
+
+
+            Preference PrefSignout = (Preference) findPreference("signout");
+            PrefSignout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("Do you want to Sign-out ?");
+// Add the buttons
+                    builder.setPositiveButton("Sign out", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User clicked OK button
+                            FirebaseAuth.getInstance().signOut();
+                            deleteAppData();
+                            Toast.makeText(getContext(), "Signed out !", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+// Set other dialog properties
+
+// Create the AlertDialog
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+
+                    return true;
+                }
+            });
+
+
+            Preference PrefDeleteBooks = (Preference) findPreference("deletebooks");
+            PrefDeleteBooks.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("Do you want to remove all offline book cache ?");
+// Add the buttons
+                    builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User clicked OK button
+                            DeleteFiles();
+                            Toast.makeText(getContext(), "Removed Successfully !", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+// Set other dialog properties
+
+// Create the AlertDialog
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                    return true;
+                }
+            });
+
+
+            Preference PrefContact = (Preference) findPreference("contact");
+            PrefContact.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("https://www.ephrine.in/contact"));
+                    startActivity(intent);
+
+
+                    return true;
+                }
+            });
+
+            Preference Prefprivacy = (Preference) findPreference("privacyp");
+            Prefprivacy.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("https://www.ephrine.in/privacy-policy"));
+                    startActivity(intent);
+
+                    return true;
+                }
+            });
+
+
+            Preference Prefwebsite = (Preference) findPreference("epwebsite");
+            Prefwebsite.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("https://www.ephrine.in/"));
+                    startActivity(intent);
+
+                    return true;
+                }
+            });
+
+
+        }
+
+        private void deleteAppData() {
+            try {
+                // clearing app data
+                String packageName = getContext().getApplicationContext().getPackageName();
+                Runtime runtime = Runtime.getRuntime();
+                runtime.exec("pm clear " + packageName);
+                Log.i(TAG, "App Data Cleared !!");
+
+                Intent intent = new Intent(getContext(), HomeActivity.class);
+
+                //  String message = editText.getText().toString();
+                //intent.putExtra(EXTRA_MESSAGE, message);
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+
+        }
+
+        @Override
+        public void onPause() {
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+            super.onPause();
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            mUser.UpdateProfileX();
+            Log.d(TAG, "onSharedPreferenceChanged: SAVED ");
+
+        }
+
+        void DeleteFiles() {
+// Currently Not Using
+
+            File directory = new File(getContext().getFilesDir(), "");
+
+            File[] files = directory.listFiles();
+            Log.d("Files", "Size: " + files.length);
+            for (int i = 0; i < files.length; i++) {
+                File localFile = new File(getContext().getFilesDir(), files[i].getName());
+                localFile.delete();
+                Log.d("Files", "GetDirFiles: Delete: " + localFile);
+
+
+  /*          String key="x";
+
+            for (DataSnapshot postSnapshot : BookLibraryDB.getChildren()) {
+                String BI="eBook"+postSnapshot.child("bookid").getValue(String.class)+ ".pdf";
+                if(files[i].getName().equals(BI)){
+                    Log.d(TAG, "GetDirFiles: Same File on Cloud:"+BI);
+                }else {
+                    key="Deleted Book";
+                    File localFile = new File(this.getFilesDir(), files[i].getName());
+                    localFile.delete();
+                    Log.d("Files", "GetDirFiles: Delete: "+localFile);
+                }
+            }
+
+            Log.d("Files", "FileName:" + files[i].getName()+"\n key:"+key+"\n----");
+*/
+            }
+
+        }
+
 
     }
 
@@ -691,7 +1033,8 @@ public void billing(){
         }
 
 
-      */  public void onPageFinished(WebView view, String url) {
+      */
+        public void onPageFinished(WebView view, String url) {
             // do your stuff here
             if (includeHomeView.getVisibility() != View.GONE) {
                 smoothProgressBar.setVisibility(View.GONE);
@@ -709,44 +1052,4 @@ public void billing(){
 
         }
     }
-
-    void GetDirFiles(){
-// Currently Not Using
-
-        File directory = new File(this.getFilesDir(),"");
-
-        File[] files = directory.listFiles();
-        Log.d("Files", "Size: "+ files.length);
-        for (int i = 0; i < files.length; i++)
-        {
-
-            String key="x";
-
-            for (DataSnapshot postSnapshot : BookLibraryDB.getChildren()) {
-                String BI="eBook"+postSnapshot.child("bookid").getValue(String.class)+ ".pdf";
-                if(files[i].getName().equals(BI)){
-                    Log.d(TAG, "GetDirFiles: Same File on Cloud:"+BI);
-                }else {
-                    key="Deleted Book";
-                    File localFile = new File(this.getFilesDir(), files[i].getName());
-                    localFile.delete();
-                    Log.d("Files", "GetDirFiles: Delete: "+localFile);
-                }
-            }
-
-            Log.d("Files", "FileName:" + files[i].getName()+"\n key:"+key+"\n----");
-
-        }
-
-    }
-
-
-    public void pay(View v){
-        Intent intent = new Intent(this, PaymentActivity.class);
-
-              //  String message = editText.getText().toString();
-                //intent.putExtra(EXTRA_MESSAGE, message);
-                startActivity(intent);
-    }
-
 }

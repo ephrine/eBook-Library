@@ -64,7 +64,6 @@
                     android:weightSum="1">
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/AddToLibraryChipchip4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
@@ -78,7 +77,6 @@
                         android:layout_weight="1" />
 
                     <ImageView
-                        android:id="@+id/cloudDownloadimageView3"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_gravity="bottom"

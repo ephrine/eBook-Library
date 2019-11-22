@@ -18,19 +18,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class UserProfileManager {
 
 
-    public String TAG = "UserProfileManager.java\n"+String.valueOf(R.string.app_name);
+    public String TAG = "UserProfileManager.java\n" + String.valueOf(R.string.app_name);
     public String UserUID;
     public String UserPhno;
     public String UserName;
@@ -95,20 +91,20 @@ public class UserProfileManager {
             ReadUserData();
 
 
-            Gson gson;// = new Gson();
+            //        Gson gson;// = new Gson();
             // convert map to JSON String
-            GsonBuilder builder = new GsonBuilder();
+   /*         GsonBuilder builder = new GsonBuilder();
             gson = builder.enableComplexMapKeySerialization().setPrettyPrinting().create();
             Type type = new TypeToken<HashMap<String, String>>() {
             }.getType();
             String j = gson.toJson(User, type);
             Log.d(TAG, "------------------\n HASHMAP to JSON\n" + j);
-
+*/
             // JSON to Hashmap
-            HashMap<String, String> User1 = new HashMap<String, String>();
+    /*        HashMap<String, String> User1 = new HashMap<String, String>();
             User1 = gson.fromJson(j, type);
             Log.d(TAG, "------------------\n JSON to hashmap \n" + User1);
-
+*/
 
         } else {
 
@@ -130,21 +126,27 @@ public class UserProfileManager {
                 // whenever data at this location is updated.
                 //   String value = dataSnapshot.getValue(String.class);
                 if (dataSnapshot != null) {
+                    SharedPreferences sharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(mContext /* Activity context */);
                     if (dataSnapshot.child("UserName").getValue(String.class) != null) {
                         UserName = dataSnapshot.child("UserName").getValue(String.class);
+                        sharedPreferences.edit().putString("pref_username", UserName).apply();
                     } else {
                         UserName = null;
                     }
 
                     if (dataSnapshot.child("Gender").getValue(String.class) != null) {
                         UserGender = dataSnapshot.child("Gender").getValue(String.class);
-                        //   SP.edit().putString("pref_user_gender", UserGender).apply();
+                        sharedPreferences.edit().putString("pref_usergender", "").apply();
+
                     } else {
                         UserGender = null;
                     }
 
                     if (dataSnapshot.child("UserPhoneNo").getValue(String.class) != null) {
                         UserPhno = dataSnapshot.child("UserPhoneNo").getValue(String.class);
+                        sharedPreferences.edit().putString("pref_userphno", UserEmail).apply();
+
                     }
 
                     if (dataSnapshot.child("ProfilePic").getValue(String.class) != null) {
@@ -153,12 +155,16 @@ public class UserProfileManager {
 
                     if (dataSnapshot.child("UserAge").getValue(String.class) != null) {
                         UserAge = dataSnapshot.child("UserAge").getValue(String.class);
+                        sharedPreferences.edit().putString("pref_userage", UserAge).apply();
+
                     } else {
                         UserAge = null;
                     }
 
                     if (dataSnapshot.child("UserEmail").getValue(String.class) != null) {
                         UserEmail = dataSnapshot.child("UserEmail").getValue(String.class);
+                        sharedPreferences.edit().putString("pref_useremail", UserEmail).apply();
+
                     } else {
                         UserEmail = null;
                     }
@@ -178,7 +184,7 @@ public class UserProfileManager {
 
 
         // Read from the database
-       DatabaseReference MyLibraryBooksDB = database.getReference("ebooksapp/users/" + UserUniqueID + "/mylibrary");
+        DatabaseReference MyLibraryBooksDB = database.getReference("ebooksapp/users/" + UserUniqueID + "/mylibrary");
         MyLibraryBooksDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -276,12 +282,12 @@ public class UserProfileManager {
         Add2MyAcc.removeValue();
         ReadUserData();
 
-       File localFile = new File(mContext.getFilesDir(), "eBook" + BookId + ".pdf");
+        File localFile = new File(mContext.getFilesDir(), "eBook" + BookId + ".pdf");
         if (localFile.exists()) {
             localFile.delete();
             Log.d(TAG, "DeleteBookLibrary: Deleted Local File");
         }
-         
+
     }
 
     public ArrayList<HashMap<String, String>> GetMyBooksLibrary() {
@@ -293,6 +299,25 @@ public class UserProfileManager {
         ph.put("UserPhno", UserPhno);
         ph.put("UserUniqueID", UserUniqueID);
 
+        GetUserProfile = database.getReference("ebooksapp/users/" + UserUniqueID + "/profile");
+        GetUserProfile.setValue(ph);
+
+    }
+
+    public void UpdateProfileX() {
+        HashMap<String, String> ph = new HashMap<String, String>();
+
+        ph.put("UserUID", UserUID);
+        ph.put("UserPhno", UserPhno);
+        ph.put("UserUniqueID", UserUniqueID);
+
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(mContext /* Activity context */);
+        String name = sharedPreferences.getString("UserName", "");
+        ph.put("UserName", sharedPreferences.getString("pref_username", ""));
+        ph.put("UserAge", sharedPreferences.getString("pref_userage", ""));
+        ph.put("UserEmail", sharedPreferences.getString("pref_useremail", ""));
+        ph.put("Gender", sharedPreferences.getString("pref_usergender", ""));
         GetUserProfile = database.getReference("ebooksapp/users/" + UserUniqueID + "/profile");
         GetUserProfile.setValue(ph);
 

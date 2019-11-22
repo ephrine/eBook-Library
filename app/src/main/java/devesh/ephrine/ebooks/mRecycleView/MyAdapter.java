@@ -24,9 +24,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import  devesh.ephrine.ebooks.BookViewActivity;
-import  devesh.ephrine.ebooks.R;
-import  devesh.ephrine.ebooks.UserProfileManager;
+import devesh.ephrine.ebooks.R;
+import devesh.ephrine.ebooks.UserProfileManager;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public static final String EXTRA_MESSAGE = "ReadBookID";
@@ -82,21 +81,21 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 .load(mDataset.get(position).get("bookcover"))
                 .into(holder.BookCoverPic);
 
-        holder.LLBook.setOnClickListener(new View.OnClickListener() {
+
+    /*    holder.LLBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //view.getTag();
                 Log.d(TAG, "onClick: " + view.getTag());
                 String tag = view.getTag().toString();
-                Intent intent = new Intent(mContext, BookViewActivity.class);
-                intent.putExtra(EXTRA_MESSAGE, tag);
+            //    Intent intent = new Intent(mContext, BookViewActivity.class);
+             //   intent.putExtra(EXTRA_MESSAGE, tag);
 
-                mContext.startActivity(intent);
+               // mContext.startActivity(intent);
             }
         });
 
-
-    /*    holder.AddToLibraryChip.setOnClickListener(new View.OnClickListener() {
+    holder.AddToLibraryChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //view.getTag();

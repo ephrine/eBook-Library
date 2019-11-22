@@ -67,3 +67,5 @@ fastlane/test_output
 fastlane/readme.md
 payment_demo/src/main/java/devesh/ephrine/health/hub/SecKeys.java
 pre_alpha/src/main/java/ephrine/elibrary/SecKeys.java
+app/src/main/res/values/SecureStrings.xml
+

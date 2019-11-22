@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019. Ephrine Apps
   ~ Code written by Devesh Chaudhari
   ~ Website: https://www.ephrine.in
@@ -30,10 +29,11 @@
         app:spb_speed="2.0"
         app:spb_stroke_separator_length="4dp"
         app:spb_stroke_width="4dp" />
+
     <WebView
         android:id="@+id/webView1"
-        android:layout_below="@id/progressBarhorizontal1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/progressBarhorizontal1" />
 
 </RelativeLayout>

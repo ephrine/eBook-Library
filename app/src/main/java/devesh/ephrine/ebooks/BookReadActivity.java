@@ -29,6 +29,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 
 import com.github.barteksc.pdfviewer.PDFView;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -156,6 +160,7 @@ public class BookReadActivity extends AppCompatActivity {
             return false;
         }
     };
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,7 +169,6 @@ public class BookReadActivity extends AppCompatActivity {
 
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-
 
         database = FirebaseDatabase.getInstance();
         mUser = new UserProfileManager(this);
@@ -241,6 +245,7 @@ public class BookReadActivity extends AppCompatActivity {
         });
         BookSync.keepSynced(true);
 
+        LoadAds();
 
     }
 
@@ -434,7 +439,6 @@ public class BookReadActivity extends AppCompatActivity {
 
     }
 
-
     public void BookMarkButton(View v) {
         //    View BookmarkView=(View)findViewById(R.id.includeBookmark);
         String TAG = v.getTag().toString();
@@ -474,13 +478,13 @@ public class BookReadActivity extends AppCompatActivity {
     }
 
     public void ViewBookInfo(View v) {
-
+/*
         Intent intent = new Intent(this, BookViewActivity.class);
 
         intent.putExtra(EXTRA_MESSAGE, ReadBookID);
 
         startActivity(intent);
-        BookReadActivity.this.finish();
+        BookReadActivity.this.finish(); */
     }
 
     public void DarkModeToggle(View v) {
@@ -498,12 +502,10 @@ public class BookReadActivity extends AppCompatActivity {
 
     }
 
-
     public void nulll(View v) {
 
 
     }
-
 
     public void Demo() {
 /*
@@ -516,5 +518,59 @@ public class BookReadActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            BookReadActivity.this.finish();
+            Log.d("TAG", "The interstitial wasn't loaded yet.");
+        }
+    }
+
+    void LoadAds() {
+
+        MobileAds.initialize(this, getString(R.string.AdMob_App_Id));
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.AdMob_Int_Id));
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                // Code to be executed when an ad request fails.
+            }
+
+            @Override
+            public void onAdOpened() {
+                // Code to be executed when the ad is displayed.
+            }
+
+            @Override
+            public void onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+            }
+
+            @Override
+            public void onAdClosed() {
+                // Code to be executed when the interstitial ad is closed.
+            }
+        });
+
+
+    }
 }
 

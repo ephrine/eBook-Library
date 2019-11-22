@@ -43,7 +43,7 @@ public class BookViewActivity extends AppCompatActivity {
     String BookID;
     String BookDesc;
     String BookLanguage;
-//    Button Add2LibraryBT;
+    //    Button Add2LibraryBT;
     Chip Add2LibraryChip;
     boolean isAddedtoLibrary;
 
@@ -63,7 +63,7 @@ public class BookViewActivity extends AppCompatActivity {
         final TextView BookDescTXT = (TextView) findViewById(R.id.BookDesctextView647);
         final Chip BookLanguageChip = (Chip) findViewById(R.id.BookLanguageChip22);
         Add2LibraryChip = (Chip) findViewById(R.id.Add2Libchip2);
-    //    Add2LibraryBT = (Button) findViewById(R.id.add2libbutton2);
+        //    Add2LibraryBT = (Button) findViewById(R.id.add2libbutton2);
         //  BookLanguageChip22
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference DownloadBookInfo = database.getReference("ebooksapp/library/books/" + ViewBookID);
