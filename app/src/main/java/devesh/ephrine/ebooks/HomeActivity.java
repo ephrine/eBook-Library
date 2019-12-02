@@ -6,11 +6,15 @@
 
 package devesh.ephrine.ebooks;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +32,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDex;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -37,6 +43,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,8 +53,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -83,6 +93,7 @@ public class HomeActivity extends AppCompatActivity {
 
     AdRequest adRequest;
     SmoothProgressBar smoothProgressBar;
+    FirebaseRemoteConfig mFirebaseRemoteConfig;
     AdView mAdView;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -254,6 +265,50 @@ public class HomeActivity extends AppCompatActivity {
 
 
         LoadMyLibrary();
+
+
+mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        mFirebaseRemoteConfig.setDefaults(R.xml.config);
+        // cacheExpirationSeconds is set to cacheExpiration here, indicating the next fetch request
+// will use fetch data from the Remote Config service, rather than cached parameter values,
+// if cached parameter values are more than cacheExpiration seconds old.
+// See Best Practices in the README for more information.
+        mFirebaseRemoteConfig.fetch(60)
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                          //  Toast.makeText(HomeActivity.this, "Fetch Succeeded",
+                            //        Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "onComplete: Remote Config: FETCHED !");
+                            // After config data is successfully fetched, it must be activated before newly fetched
+                            // values are returned.
+                            mFirebaseRemoteConfig.activateFetched();
+
+                            String ServerAppVersion = mFirebaseRemoteConfig.getString("TextBookNerd_AppVersion");
+
+                            Log.d(TAG, "onCreate: Remote Config: "+ServerAppVersion);
+                            int AppVersion=Integer.parseInt(getString(R.string.app_version));
+                            if(Integer.parseInt(ServerAppVersion)==AppVersion){
+                                Log.d(TAG, "onComplete: Remote Config: App latest Version");
+                            }
+                            if(AppVersion<Integer.parseInt(ServerAppVersion)){
+                                Log.d(TAG, "onComplete: Remote Config: Need App Update");
+                                CreateNotification(getString(R.string.app_name), "New App Update is Available.");
+                            }
+
+                         //   CreateNotification("Update Available", "Update now");
+
+                        } else {
+                        //    Toast.makeText(MainActivity.this, "Fetch Failed",
+                          //          Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "onComplete: Remote Config: Fetch Failed !");
+
+                        }
+
+                    }
+                });
+
 
 
     }
@@ -678,21 +733,34 @@ public void billing(){
 //            myLibraryBooksrecyclerView.setLayoutManager(layoutManager);
             myLibraryBooksrecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
             // specify an adapter (see also next example)
-
-            DatabaseReference MyLibraryBooksDB = database.getReference("ebooksapp/users/" + UserUniqueID + "/mylibrary");
+            Log.d(TAG, "LoadMyLibrary: Loading....");
+            DatabaseReference MyLibraryBooksDB = database.getReference("/users/" + UserUniqueID + "/mylibrary");
             MyLibraryBooksDB.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // This method is called once with the initial value and again
                     // whenever data at this location is updated.
                     //   String value = dataSnapshot.getValue(String.class);
+                    Log.d(TAG, "LoadMyLibrary: Fetching....");
+
                     if (dataSnapshot != null) {
                         MyLibraryBookHashmap.clear();
                         BookLibraryDB = dataSnapshot;
                         //      GetDirFiles();
+                        Log.d(TAG, "LoadMyLibrary: Fetched :) "+BookLibraryDB.getChildrenCount());
+LinearLayout LLEmpty=findViewById(R.id.PopUpLayout);
+                        if(BookLibraryDB.getChildrenCount()==0){
+    HomeLoading.setVisibility(View.GONE);
+    LLEmpty.setVisibility(View.VISIBLE);
+
+}else {
+                            LLEmpty.setVisibility(View.GONE);
+}
 
                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                             String BookID = "null";
+                            Log.d(TAG, "LoadMyLibrary: For Looping");
+
                             if (postSnapshot.child("bookid").getValue(String.class) != null) {
                                 BookID = postSnapshot.child("bookid").getValue(String.class);
                                 //MyLibraryBookList.add(BookID);
@@ -744,11 +812,19 @@ public void billing(){
                                     }
                                 });
 
+                            }else{
+                                HomeLoading.setVisibility(View.GONE);
+                                Log.d(TAG, "onDataChange: Book not Found ! No Library Data");
                             }
                             Log.i(TAG, "onDataChange: ------------------\n Get User Library\n" + BookID + "\n");
                             //Log.i(TAG, "onDataChange: ------------------\n My Book Library\n" + MyLibraryBookList);
 
                         }
+                    }else{
+
+                        HomeLoading.setVisibility(View.GONE);
+                        Log.d(TAG, "onDataChange: No Library Data");
+
                     }
                 }
 
@@ -761,8 +837,16 @@ public void billing(){
             MyLibraryBooksDB.keepSynced(true);
 
             loadAds();
+            LinearLayout AdLayout=(LinearLayout)findViewById(R.id.ads);
+
+            if(isInternetAvailable()){
+                AdLayout.setVisibility(View.VISIBLE);
+            }else {
+                AdLayout.setVisibility(View.GONE);
+            }
 
         } else {
+            Log.d(TAG, "LoadMyLibrary: Layout not found !");
             HomeLoading.setVisibility(View.GONE);
 
         }
@@ -1014,6 +1098,49 @@ public void billing(){
 
     }
 
+    void CreateNotification(String title, String message){
+
+
+
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, UpdateActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+
+
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "001")
+                .setSmallIcon(R.drawable.app_logo_mono)
+                .setContentTitle(title)
+                .setContentIntent(pendingIntent)
+                .setColor(getResources().getColor(R.color.colorAccent))
+                .setContentText(message)
+                .addAction(R.drawable.ic_update_black_24dp, "Update Now",
+                        pendingIntent)
+                .setSound(null, AudioManager.STREAM_NOTIFICATION)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            String CHANNEL_ID = "001";
+            CharSequence name = getString(R.string.app_name);
+            String Description = "Update";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel;
+            mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+               mChannel.enableVibration(true);
+
+            notificationManager.createNotificationChannel(mChannel);
+       }
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(001, builder.build());
+
+
+    }
     private class MyWebViewClient extends WebViewClient {
         /*@Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -1052,4 +1179,16 @@ public void billing(){
 
         }
     }
+
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("https://www.google.com");
+            //You can replace it with your name
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

@@ -6,7 +6,10 @@
 
 package devesh.ephrine.ebooks;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.media.AudioManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -70,13 +73,33 @@ public class BookDownloadWorker extends Worker {
         builder = new NotificationCompat.Builder(mContext, CHANNEL_ID);
         builder.setContentTitle(BookName)
                 .setContentText("Downloading")
-                .setSmallIcon(R.drawable.book_baseline_book_black_48dp)
+                .setSmallIcon(R.drawable.app_logo_mono)
+              //  .setColor(R.color.colorAccent)
+                .setSound(null, AudioManager.STREAM_NOTIFICATION)
+
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
 // Issue the initial notification with zero progress
         int PROGRESS_MAX = 100;
         int PROGRESS_CURRENT = 0;
         builder.setProgress(PROGRESS_MAX, PROGRESS_CURRENT, false);
+
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+            CharSequence name = mContext.getString(R.string.app_name);
+            String Description = "Downloading";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel;
+            mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+            mChannel.setSound(null,null);
+        //    mChannel.enableVibration(true);
+
+
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
         notificationManager.notify(1995, builder.build());
 
 

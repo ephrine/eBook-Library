@@ -5,6 +5,9 @@
     <color name="colorAccent">#D500FA</color>
     <color name="navSelected">#4A148C</color>
     <color name="blackk">#66000000</color>
+    <color name="cardbg_trans_white">#44D500F9</color>
+    <color name="cardbg_trans_violet">#39D500F9</color>
+    <color name="cardbg_trans_blue">#390091F9</color>
 
 
 </resources>

@@ -60,9 +60,8 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="About">
         <Preference
-            app:key="about"
-            app:summary="@string/app_desc1"
-            app:title="About"
+            app:summary="@string/version"
+            app:title="Version"
             app:useSimpleSummaryProvider="true" />
 
         <Preference

@@ -85,7 +85,7 @@ public class UserProfileManager {
             Log.i(TAG, "onCreate: ---------------\n " + ss);
             FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-            DatabaseReference UserDB = database.getInstance().getReference("ebooksapp/users/" + UserUniqueID + "/profile");
+            DatabaseReference UserDB = database.getInstance().getReference("users/" + UserUniqueID + "/profile");
             //   UserDB.setValue(User);
 
             ReadUserData();
@@ -118,7 +118,7 @@ public class UserProfileManager {
 //        final SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
 //        database.setPersistenceEnabled(true);
-        GetUserProfile = database.getReference("ebooksapp/users/" + UserUniqueID + "/profile");
+        GetUserProfile = database.getReference("users/" + UserUniqueID + "/profile");
         GetUserProfile.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -184,7 +184,7 @@ public class UserProfileManager {
 
 
         // Read from the database
-        DatabaseReference MyLibraryBooksDB = database.getReference("ebooksapp/users/" + UserUniqueID + "/mylibrary");
+        DatabaseReference MyLibraryBooksDB = database.getReference("users/" + UserUniqueID + "/mylibrary");
         MyLibraryBooksDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -200,7 +200,7 @@ public class UserProfileManager {
                             //MyLibraryBookList.add(BookID);
 
                             DatabaseReference GetBookDB;
-                            GetBookDB = FirebaseDatabase.getInstance().getReference("ebooksapp/library/books/" + BookID);
+                            GetBookDB = FirebaseDatabase.getInstance().getReference("library/books/" + BookID);
                             GetBookDB.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -267,7 +267,7 @@ public class UserProfileManager {
         aBooks.put("bookAddedDate", "Date Added");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference Add2MyAcc = database.getReference("ebooksapp/users/" + UserUniqueID + "/mylibrary/" + BookId);
+        DatabaseReference Add2MyAcc = database.getReference("users/" + UserUniqueID + "/mylibrary/" + BookId);
         Add2MyAcc.setValue(aBooks);
         ReadUserData();
 
@@ -278,7 +278,7 @@ public class UserProfileManager {
         Toast.makeText(mContext, "Book Removed from Library", Toast.LENGTH_SHORT).show();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference Add2MyAcc = database.getReference("ebooksapp/users/" + UserUniqueID + "/mylibrary/" + BookId);
+        DatabaseReference Add2MyAcc = database.getReference("users/" + UserUniqueID + "/mylibrary/" + BookId);
         Add2MyAcc.removeValue();
         ReadUserData();
 
@@ -299,7 +299,7 @@ public class UserProfileManager {
         ph.put("UserPhno", UserPhno);
         ph.put("UserUniqueID", UserUniqueID);
 
-        GetUserProfile = database.getReference("ebooksapp/users/" + UserUniqueID + "/profile");
+        GetUserProfile = database.getReference("users/" + UserUniqueID + "/profile");
         GetUserProfile.setValue(ph);
 
     }
@@ -318,7 +318,7 @@ public class UserProfileManager {
         ph.put("UserAge", sharedPreferences.getString("pref_userage", ""));
         ph.put("UserEmail", sharedPreferences.getString("pref_useremail", ""));
         ph.put("Gender", sharedPreferences.getString("pref_usergender", ""));
-        GetUserProfile = database.getReference("ebooksapp/users/" + UserUniqueID + "/profile");
+        GetUserProfile = database.getReference("users/" + UserUniqueID + "/profile");
         GetUserProfile.setValue(ph);
 
     }

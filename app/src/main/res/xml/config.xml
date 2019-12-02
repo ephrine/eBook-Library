@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019. Ephrine Apps
+  ~ Code written by Devesh Chaudhari
+  ~ Website: https://www.ephrine.in
+  -->
+<!-- START xml_defaults -->
+<defaultsMap>
+    <entry>
+        <key>TextBookNerd_AppVersion</key>
+        <value>00</value>
+    </entry>
+
+</defaultsMap>
+    <!-- END xml_defaults -->

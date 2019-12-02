@@ -205,7 +205,7 @@ public class BookReadActivity extends AppCompatActivity {
         DownloadBooks();
 
         //Sync Book Details
-        DatabaseReference BookSync = database.getReference("ebooksapp/users/" + mUser.UserUniqueID + "/mylibrary/" + ReadBookID);
+        DatabaseReference BookSync = database.getReference("users/" + mUser.UserUniqueID + "/mylibrary/" + ReadBookID);
         BookSync.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -413,7 +413,7 @@ public class BookReadActivity extends AppCompatActivity {
     public void SetBookMark(View v) {
         int CurrentPg = pdfView.getCurrentPage();
         // BookmarksList.add(String.valueOf(CurrentPg));
-        DatabaseReference addBM = database.getReference("ebooksapp/users/" + mUser.UserUniqueID + "/mylibrary/" + ReadBookID + "/bookmarks/" + String.valueOf(CurrentPg));
+        DatabaseReference addBM = database.getReference("users/" + mUser.UserUniqueID + "/mylibrary/" + ReadBookID + "/bookmarks/" + String.valueOf(CurrentPg));
 
         if (BookmarksList.contains(String.valueOf(CurrentPg))) {
             addBM.removeValue();
