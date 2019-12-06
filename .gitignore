@@ -52,7 +52,7 @@ captures/
 .externalNativeBuild
 
 # Google Services (e.g. APIs or Firebase)
-google-services.jsonx
+google-services.json
 
 # Freeline
 freeline.py
