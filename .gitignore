@@ -70,3 +70,5 @@ pre_alpha/src/main/java/ephrine/elibrary/SecKeys.javax
 app/src/main/res/values/SecureStrings.xml
 /signkeys
 
+signkey/key.jks
+signkey/private_key.pepk
