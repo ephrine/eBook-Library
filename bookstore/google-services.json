@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "12873199631",
+    "firebase_url": "https://bitvedas-13cc3.firebaseio.com",
+    "project_id": "bitvedas-13cc3",
+    "storage_bucket": "bitvedas-13cc3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12873199631:android:52884ba51d678482",
+        "android_client_info": {
+          "package_name": "devesh.ephrine.ebooks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "12873199631-fk5te5ceme8gir16tp5h7dbcblm663e6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "devesh.ephrine.ebooks",
+            "certificate_hash": "06c1298111e582c3baffa29b3ba7a446436daf57"
+          }
+        },
+        {
+          "client_id": "12873199631-973gkfrgelp7vpncojdo0tjucftnf5hq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCruLU-ZzpUZgS6j1ZppSmPsvwZ5dNRP1s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "12873199631-973gkfrgelp7vpncojdo0tjucftnf5hq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "604268858850",
+    "firebase_url": "https://ayurvedelibrary.firebaseio.com",
+    "project_id": "ayurvedelibrary",
+    "storage_bucket": "ayurvedelibrary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:604268858850:android:d79ddf70abbee1f8",
+        "android_client_info": {
+          "package_name": "ephrine.elibrary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "604268858850-stupf9bqlve95lt5474c58prkc8kta45.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCj8LnaaahbrtYwtr3y-_xBdzjT7RGPJZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "604268858850-stupf9bqlve95lt5474c58prkc8kta45.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2019. Ephrine Apps
+  ~ Code written by Devesh Chaudhari
+  ~ Website: https://www.ephrine.in
+  -->
+
+<resources>
+    <!--Test id-->
+    <string name="AdMob_App_Id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="AdMob_Banner_Id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="AdMob_Int_Id">ca-app-pub-3940256099942544/1033173712</string>
+
+
+</resources>
