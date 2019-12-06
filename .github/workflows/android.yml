@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v1
@@ -13,5 +13,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 13.0.1
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+
+        
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build --debug
+
