@@ -9,28 +9,29 @@ package devesh.ephrine.ebooks;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.os.IBinder;
+import android.net.Uri;
 import android.util.Log;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.google.firebase.messaging.RemoteMessage;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
-    String TAG="TextBook Nerd Service";
+    String TAG = "TextBook Nerd Service";
+
     public FirebaseMessagingService() {
     }
 
-  /*  @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-*/
+    /*  @Override
+      public IBinder onBind(Intent intent) {
+          // TODO: Return the communication channel to the service.
+          throw new UnsupportedOperationException("Not yet implemented");
+      }
+  */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // ...
@@ -39,36 +40,32 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
 
 
-
-
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " +
-                    remoteMessage.getData()+
-                    "\nKey: "+remoteMessage.getData().get("app_update"));
+                    remoteMessage.getData() +
+                    "\nKey: " + remoteMessage.getData().get("app_update"));
 
-            String url=remoteMessage.getData().get("app_update");
-         //   CreateNotification(getString(R.string.app_name),msg);
+            String url = remoteMessage.getData().get("app_update");
+            //   CreateNotification(getString(R.string.app_name),msg);
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-              //  scheduleJob();
+                //  scheduleJob();
             } else {
                 // Handle message within 10 seconds
-            //    handleNow();
+                //    handleNow();
             }
 
         }
 
-        String Message="";
+        String Message = "";
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            Message=remoteMessage.getNotification().getBody();
+            Message = remoteMessage.getNotification().getBody();
         }
-
-
 
 
         // Create an explicit intent for an Activity in your app
@@ -76,8 +73,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-
 
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "002")
@@ -88,7 +83,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .setContentText(Message)
                 .setSound(null, AudioManager.STREAM_NOTIFICATION)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
-
 
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
@@ -125,19 +119,16 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-       // sendRegistrationToServer(token);
+        // sendRegistrationToServer(token);
     }
 
-    void CreateNotification(String title, String message){
-
+    void CreateNotification(String title, String message) {
 
 
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(this, UpdateActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-
 
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "002")
@@ -150,7 +141,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                         pendingIntent)
                 .setSound(null, AudioManager.STREAM_NOTIFICATION)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
-
 
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
@@ -171,6 +161,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
 
     }
+
 
 
 }

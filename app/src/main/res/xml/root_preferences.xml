@@ -59,6 +59,13 @@
 
     </PreferenceCategory>
     <PreferenceCategory android:title="About">
+
+        <Preference
+            app:summary="Read latest news and updates related to our company and products"
+            app:title="Blog and News"
+            app:key="blog"
+            app:useSimpleSummaryProvider="true" />
+
         <Preference
             app:summary="@string/version"
             app:title="Version"

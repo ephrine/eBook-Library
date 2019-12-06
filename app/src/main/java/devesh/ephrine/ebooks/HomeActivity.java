@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDex;
@@ -267,7 +269,7 @@ public class HomeActivity extends AppCompatActivity {
         LoadMyLibrary();
 
 
-mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         mFirebaseRemoteConfig.setDefaults(R.xml.config);
         // cacheExpirationSeconds is set to cacheExpiration here, indicating the next fetch request
 // will use fetch data from the Remote Config service, rather than cached parameter values,
@@ -278,7 +280,7 @@ mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                          //  Toast.makeText(HomeActivity.this, "Fetch Succeeded",
+                            //  Toast.makeText(HomeActivity.this, "Fetch Succeeded",
                             //        Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "onComplete: Remote Config: FETCHED !");
                             // After config data is successfully fetched, it must be activated before newly fetched
@@ -287,28 +289,27 @@ mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
 
                             String ServerAppVersion = mFirebaseRemoteConfig.getString("TextBookNerd_AppVersion");
 
-                            Log.d(TAG, "onCreate: Remote Config: "+ServerAppVersion);
-                            int AppVersion=Integer.parseInt(getString(R.string.app_version));
-                            if(Integer.parseInt(ServerAppVersion)==AppVersion){
+                            Log.d(TAG, "onCreate: Remote Config: " + ServerAppVersion);
+                            int AppVersion = Integer.parseInt(getString(R.string.app_version));
+                            if (Integer.parseInt(ServerAppVersion) == AppVersion) {
                                 Log.d(TAG, "onComplete: Remote Config: App latest Version");
                             }
-                            if(AppVersion<Integer.parseInt(ServerAppVersion)){
+                            if (AppVersion < Integer.parseInt(ServerAppVersion)) {
                                 Log.d(TAG, "onComplete: Remote Config: Need App Update");
                                 CreateNotification(getString(R.string.app_name), "New App Update is Available.");
                             }
 
-                         //   CreateNotification("Update Available", "Update now");
+                            //   CreateNotification("Update Available", "Update now");
 
                         } else {
-                        //    Toast.makeText(MainActivity.this, "Fetch Failed",
-                          //          Toast.LENGTH_SHORT).show();
+                            //    Toast.makeText(MainActivity.this, "Fetch Failed",
+                            //          Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "onComplete: Remote Config: Fetch Failed !");
 
                         }
 
                     }
                 });
-
 
 
     }
@@ -718,10 +719,43 @@ public void billing(){
 
     }
 
+    public LinearLayout LLEmpty;
+    public CardView EmptyLibraryCardView;
+    public CardView NoInternetCardView;
     public void LoadMyLibrary() {
 
 
         if (includeMyLibraryBooks.getVisibility() != View.GONE) {
+
+            LLEmpty = findViewById(R.id.PopUpLayout);
+            EmptyLibraryCardView=findViewById(R.id.EmptyLibraryCardView);
+            NoInternetCardView=findViewById(R.id.NoInternetCardView);
+
+            if(isInternetAvailable()){
+                Log.d(TAG, "LoadMyLibrary: Net  AVAILABLE #0");
+                if(LLEmpty.getVisibility()!=View.GONE){
+                NoInternetCardView.setVisibility(View.GONE);
+                    Log.d(TAG, "LoadMyLibrary: Net  AVAILABLE #1");
+                }else {
+                    Log.d(TAG, "LoadMyLibrary: Net  AVAILABLE #2");
+                    LLEmpty.setVisibility(View.GONE);
+                    NoInternetCardView.setVisibility(View.GONE);
+                }
+
+            }else{
+
+                Log.d(TAG, "LoadMyLibrary: Net not AVAILABLE #0");
+                if(LLEmpty.getVisibility()!=View.GONE){
+                    NoInternetCardView.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "LoadMyLibrary: Net not AVAILABLE #1");
+                }else {
+                    Log.d(TAG, "LoadMyLibrary: Net AVAILABLE #2");
+                    LLEmpty.setVisibility(View.GONE);
+                    NoInternetCardView.setVisibility(View.GONE);
+                }
+
+            }
+
             myLibraryBooksrecyclerView = (RecyclerView) findViewById(R.id.myBookLibraryRecycleView);
             // myLibraryBooksrecyclerView.removeAllViews();
             // myLibraryBooksrecyclerView.removeAllViewsInLayout();
@@ -747,15 +781,42 @@ public void billing(){
                         MyLibraryBookHashmap.clear();
                         BookLibraryDB = dataSnapshot;
                         //      GetDirFiles();
-                        Log.d(TAG, "LoadMyLibrary: Fetched :) "+BookLibraryDB.getChildrenCount());
-LinearLayout LLEmpty=findViewById(R.id.PopUpLayout);
-                        if(BookLibraryDB.getChildrenCount()==0){
-    HomeLoading.setVisibility(View.GONE);
-    LLEmpty.setVisibility(View.VISIBLE);
+                        Log.d(TAG, "LoadMyLibrary: Fetched :) " + BookLibraryDB.getChildrenCount());
 
-}else {
+                        if (BookLibraryDB.getChildrenCount() == 0) {
+                            HomeLoading.setVisibility(View.GONE);
+                            if(LLEmpty.getVisibility()!=View.GONE){
+                                if(isInternetAvailable()){
+                                    EmptyLibraryCardView.setVisibility(View.VISIBLE);
+                               //     NoInternetCardView.setVisibility(View.GONE);
+                                }else{
+
+                                    EmptyLibraryCardView.setVisibility(View.VISIBLE);
+                                 //   NoInternetCardView.setVisibility(View.VISIBLE);
+
+                                }
+
+                            }else {
+                                if(isInternetAvailable()){
+                                    LLEmpty.setVisibility(View.VISIBLE);
+
+                                    EmptyLibraryCardView.setVisibility(View.VISIBLE);
+                           //         NoInternetCardView.setVisibility(View.GONE);
+
+                                }else{
+                                    LLEmpty.setVisibility(View.VISIBLE);
+
+                                    EmptyLibraryCardView.setVisibility(View.VISIBLE);
+                            //        NoInternetCardView.setVisibility(View.VISIBLE);
+
+                                }
+
+
+                            }
+
+                        } else {
                             LLEmpty.setVisibility(View.GONE);
-}
+                        }
 
                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                             String BookID = "null";
@@ -812,7 +873,7 @@ LinearLayout LLEmpty=findViewById(R.id.PopUpLayout);
                                     }
                                 });
 
-                            }else{
+                            } else {
                                 HomeLoading.setVisibility(View.GONE);
                                 Log.d(TAG, "onDataChange: Book not Found ! No Library Data");
                             }
@@ -820,7 +881,7 @@ LinearLayout LLEmpty=findViewById(R.id.PopUpLayout);
                             //Log.i(TAG, "onDataChange: ------------------\n My Book Library\n" + MyLibraryBookList);
 
                         }
-                    }else{
+                    } else {
 
                         HomeLoading.setVisibility(View.GONE);
                         Log.d(TAG, "onDataChange: No Library Data");
@@ -837,11 +898,11 @@ LinearLayout LLEmpty=findViewById(R.id.PopUpLayout);
             MyLibraryBooksDB.keepSynced(true);
 
             loadAds();
-            LinearLayout AdLayout=(LinearLayout)findViewById(R.id.ads);
+            LinearLayout AdLayout = (LinearLayout) findViewById(R.id.ads);
 
-            if(isInternetAvailable()){
+            if (isInternetAvailable()) {
                 AdLayout.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 AdLayout.setVisibility(View.GONE);
             }
 
@@ -897,6 +958,53 @@ LinearLayout LLEmpty=findViewById(R.id.PopUpLayout);
 
         }
 
+
+    }
+
+    void CreateNotification(String title, String message) {
+
+
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, UpdateActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "001")
+                .setSmallIcon(R.drawable.app_logo_mono)
+                .setContentTitle(title)
+                .setContentIntent(pendingIntent)
+                .setColor(getResources().getColor(R.color.colorAccent))
+                .setContentText(message)
+                .addAction(R.drawable.ic_update_black_24dp, "Update Now",
+                        pendingIntent)
+                .setSound(null, AudioManager.STREAM_NOTIFICATION)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            String CHANNEL_ID = "001";
+            CharSequence name = getString(R.string.app_name);
+            String Description = "Update";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel;
+            mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+            mChannel.enableVibration(true);
+
+            notificationManager.createNotificationChannel(mChannel);
+        }
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(001, builder.build());
+
+
+    }
+
+    public boolean isInternetAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
 
     }
 
@@ -1098,49 +1206,6 @@ LinearLayout LLEmpty=findViewById(R.id.PopUpLayout);
 
     }
 
-    void CreateNotification(String title, String message){
-
-
-
-        // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(this, UpdateActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-
-
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "001")
-                .setSmallIcon(R.drawable.app_logo_mono)
-                .setContentTitle(title)
-                .setContentIntent(pendingIntent)
-                .setColor(getResources().getColor(R.color.colorAccent))
-                .setContentText(message)
-                .addAction(R.drawable.ic_update_black_24dp, "Update Now",
-                        pendingIntent)
-                .setSound(null, AudioManager.STREAM_NOTIFICATION)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
-
-
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            String CHANNEL_ID = "001";
-            CharSequence name = getString(R.string.app_name);
-            String Description = "Update";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel mChannel;
-            mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
-            mChannel.setDescription(Description);
-               mChannel.enableVibration(true);
-
-            notificationManager.createNotificationChannel(mChannel);
-       }
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(001, builder.build());
-
-
-    }
     private class MyWebViewClient extends WebViewClient {
         /*@Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -1177,17 +1242,6 @@ LinearLayout LLEmpty=findViewById(R.id.PopUpLayout);
             }
             Log.d(TAG, "onPageStarted: " + url);
 
-        }
-    }
-
-    public boolean isInternetAvailable() {
-        try {
-            InetAddress ipAddr = InetAddress.getByName("https://www.google.com");
-            //You can replace it with your name
-            return !ipAddr.equals("");
-
-        } catch (Exception e) {
-            return false;
         }
     }
 

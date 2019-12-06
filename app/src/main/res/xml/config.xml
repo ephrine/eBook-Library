@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019. Ephrine Apps
   ~ Code written by Devesh Chaudhari
   ~ Website: https://www.ephrine.in
@@ -11,5 +10,4 @@
         <value>00</value>
     </entry>
 
-</defaultsMap>
-    <!-- END xml_defaults -->
+</defaultsMap><!-- END xml_defaults -->

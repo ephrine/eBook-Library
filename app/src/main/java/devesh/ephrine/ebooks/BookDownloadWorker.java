@@ -74,7 +74,7 @@ public class BookDownloadWorker extends Worker {
         builder.setContentTitle(BookName)
                 .setContentText("Downloading")
                 .setSmallIcon(R.drawable.app_logo_mono)
-              //  .setColor(R.color.colorAccent)
+                //  .setColor(R.color.colorAccent)
                 .setSound(null, AudioManager.STREAM_NOTIFICATION)
 
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -93,8 +93,8 @@ public class BookDownloadWorker extends Worker {
             NotificationChannel mChannel;
             mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
             mChannel.setDescription(Description);
-            mChannel.setSound(null,null);
-        //    mChannel.enableVibration(true);
+            mChannel.setSound(null, null);
+            //    mChannel.enableVibration(true);
 
 
             notificationManager.createNotificationChannel(mChannel);

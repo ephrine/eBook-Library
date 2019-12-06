@@ -28,5 +28,10 @@
     <string name="empty_library">Ooh! Your Book Library is Empty.</string>
     <string name="no_internet">Please Connect to Internet</string>
 
-    <!-- Sync Preferences -->
+
+
+    <string name="FCM_update_url">ep_update_url</string>
+    <string name="FCM_browser_url">ep_browser_url</string>
+    <string name="FCM_open_app_url">ep_open_app_url</string>
+
 </resources>
