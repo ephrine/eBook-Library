@@ -34,4 +34,10 @@
     <string name="FCM_browser_url">ep_browser_url</string>
     <string name="FCM_open_app_url">ep_open_app_url</string>
 
+
+
+    <string name="AdMob_App_Id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="AdMob_Banner_Id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="AdMob_Int_Id">ca-app-pub-3940256099942544/1033173712</string>
+
 </resources>
