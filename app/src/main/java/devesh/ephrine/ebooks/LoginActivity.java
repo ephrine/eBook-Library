@@ -6,9 +6,16 @@
 
 package devesh.ephrine.ebooks;
 
+import android.bluetooth.BluetoothClass;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
+import android.view.View;
+import android.widget.VideoView;
+
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,11 +34,22 @@ public class LoginActivity extends AppCompatActivity {
 
     public String TAG = String.valueOf(R.string.app_name);
     private FirebaseAuth mAuth;
-
+    VideoView videoview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        videoview = (VideoView) findViewById(R.id.videoView);
+        Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.loginvideo);
+        videoview.setVideoURI(uri);
+        videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.setLooping(true);
+            }
+        });
+        videoview.start();
+
 //FirebaseAuth.getInstance();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -43,13 +61,36 @@ public class LoginActivity extends AppCompatActivity {
             //intent.putExtra(EXTRA_MESSAGE, message);
             startActivity(intent);
         } else {
-            login();
+            //login();
         }
 
 
     }
 
-    public void login() {
+    @Override
+    protected void onPause() {
+        videoview.stopPlayback();
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        videoview = (VideoView) findViewById(R.id.videoView);
+        Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.loginvideo);
+        videoview.setVideoURI(uri);
+        videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.setLooping(true);
+            }
+        });
+        videoview.start();
+    }
+
+     public void login() {
+
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -119,5 +160,20 @@ public class LoginActivity extends AppCompatActivity {
         //  String message = editText.getText().toString();
         //intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
+        LoginActivity.this.finish();
+    }
+
+    public void PPClick(View v){
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("https://ephrine.in/privacy-policy"));
+        startActivity(intent);
+
+
+    }
+
+    public void LoginNow(View v){
+
+        login();
     }
 }

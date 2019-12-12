@@ -33,14 +33,15 @@ public class MainActivity extends AppCompatActivity {
                     if (auth.getCurrentUser() != null) {
 
                         i = new Intent(getBaseContext(), HomeActivity.class);
+
                     } else {
                         i = new Intent(getBaseContext(), LoginActivity.class);
 
                     }
                     startActivity(i);
-
                     // Remove activity
                     MainActivity.this.finish();
+
 
 
                 } catch (Exception e) {

@@ -22,6 +22,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -97,6 +99,9 @@ public class HomeActivity extends AppCompatActivity {
     SmoothProgressBar smoothProgressBar;
     FirebaseRemoteConfig mFirebaseRemoteConfig;
     AdView mAdView;
+    boolean isBlogAvailable;
+
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -287,9 +292,11 @@ public class HomeActivity extends AppCompatActivity {
                             // values are returned.
                             mFirebaseRemoteConfig.activateFetched();
 
-                            String ServerAppVersion = mFirebaseRemoteConfig.getString("TextBookNerd_AppVersion");
+                            String ServerAppVersion = mFirebaseRemoteConfig.getString("BitVedas_AppVersion");
+                           // isBlogAvailable = mFirebaseRemoteConfig.getBoolean("TextBookNerd_isBlogAvailable");
 
-                            Log.d(TAG, "onCreate: Remote Config: " + ServerAppVersion);
+
+                            Log.d(TAG, "onCreate: Remote Config: Server App Version:" + ServerAppVersion+"\n isBlogAvailable:"+isBlogAvailable);
                             int AppVersion = Integer.parseInt(getString(R.string.app_version));
                             if (Integer.parseInt(ServerAppVersion) == AppVersion) {
                                 Log.d(TAG, "onComplete: Remote Config: App latest Version");
@@ -926,8 +933,6 @@ public void billing(){
 
         WebView myWebView = (WebView) findViewById(R.id.webView1);
         smoothProgressBar = (SmoothProgressBar) findViewById(R.id.progressBarhorizontal1);
-        myWebView.loadUrl("about:blank");
-        myWebView.loadUrl(URL);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setAppCacheEnabled(true);
@@ -938,6 +943,9 @@ public void billing(){
         webSettings.setGeolocationEnabled(true);
         webSettings.setLoadsImagesAutomatically(true);
         myWebView.setWebViewClient(new MyWebViewClient());
+        myWebView.loadUrl("about:blank");
+
+        myWebView.loadUrl(URL);
 
     }
 
@@ -1129,6 +1137,20 @@ public void billing(){
                 }
             });
 
+            Preference PrefBlog = (Preference) findPreference("blog");
+
+       //     PrefBlog.setVisible(false);
+            PrefBlog.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("https://www.ephrine.in/blog"));
+                    startActivity(intent);
+
+                    return true;
+                }
+            });
+
 
         }
 
@@ -1140,11 +1162,9 @@ public void billing(){
                 runtime.exec("pm clear " + packageName);
                 Log.i(TAG, "App Data Cleared !!");
 
-                Intent intent = new Intent(getContext(), HomeActivity.class);
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+      startActivity(intent);
 
-                //  String message = editText.getText().toString();
-                //intent.putExtra(EXTRA_MESSAGE, message);
-                startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1207,6 +1227,7 @@ public void billing(){
     }
 
     private class MyWebViewClient extends WebViewClient {
+
         /*@Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if ("bitvedas-13cc3.web.app".equals(Uri.parse(url).getHost())) {
@@ -1226,23 +1247,47 @@ public void billing(){
 
 
       */
+    /*    @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            super.onProgressChanged(view, newProgress);
+            if(newProgress==100){
+
+                if (includeHomeView.getVisibility() != View.GONE) {
+                    smoothProgressBar.setVisibility(View.GONE);
+                }
+
+            }else {
+
+                if (includeHomeView.getVisibility() != View.GONE) {
+                    smoothProgressBar.setVisibility(View.VISIBLE);
+                }
+                Log.d(TAG, "onPageStarted: " + view.getUrl());
+
+            }
+        }*/
+
         public void onPageFinished(WebView view, String url) {
             // do your stuff here
-            if (includeHomeView.getVisibility() != View.GONE) {
-                smoothProgressBar.setVisibility(View.GONE);
-            }
+
             Log.d(TAG, "onPageFinished: " + url);
         }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            if (includeHomeView.getVisibility() != View.GONE) {
-                smoothProgressBar.setVisibility(View.VISIBLE);
-            }
-            Log.d(TAG, "onPageStarted: " + url);
+
 
         }
+
+
+  /*      @Override
+        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+            android.util.Log.d("WebView", consoleMessage.message());
+
+            return true;
+        }
+*/
+
     }
 
 }

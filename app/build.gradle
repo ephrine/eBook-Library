@@ -8,6 +8,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    signingConfigs {
+        releaseApp {
+            storeFile file('D:\\Android_Development\\GitHub\\eBook Library\\signkey\\key.jks')
+            storePassword 'deveshcc'
+            keyAlias = 'booklibrary'
+            keyPassword 'deveshcc'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
 
@@ -23,6 +31,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables.useSupportLibrary = true
+        signingConfig signingConfigs.releaseApp
 
     }
 
@@ -35,8 +44,16 @@ android {
         }
     }
 
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
 
 }
+
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])

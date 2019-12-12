@@ -1,14 +1,17 @@
 <resources>
-    <string name="app_name">TextBook Nerd</string>
+    <string name="app_name">BitVedas</string>
 
     <string name="title_activity_book_read">TextBook Reader</string>
 
-    <string name="Book_Store_url">https://bitvedas-13cc3.web.app/app/store.html</string>
+    <string name="Book_Store_url">https://www.ephrine.in/bitvedas/app/store.html</string>
+  <!--  <string name="Book_Store_url">http://localhost:5000/textbook-nerd/app/store.html</string>-->
+
+
     <string name="pref_purchase">prefpurchase</string>
     <string name="app_version">1</string>
     <string name="version">0.0.1 (Pre-Alpha)</string>
     <string name="app_desc">
-        Books give a soul to the universe, wings to the mind, flight to the imagination, and life to everything.TextBook Hub provides free access to Science Textbooks of various category like medicine, pharmacy, chemistry, biochemistry, Ayurveda and many more.
+        Books give a soul to the universe, wings to the mind, flight to the imagination, and life to everything. Bitedas provides free access to Science Textbooks of various category like medicine, pharmacy, chemistry, biochemistry, Ayurveda and many more.
         Our book collection is consist of public domain books hence they are available for free reading.
     </string>
 

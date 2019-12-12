@@ -20,9 +20,10 @@
 
             <ImageView
                 android:id="@+id/BookCoverMyLibraryImageView"
-                android:layout_width="200dp"
+                android:layout_width="150dp"
                 android:layout_height="280dp"
                 android:layout_gravity="center"
+                android:scaleType="fitXY"
                 app:srcCompat="@drawable/bookcover625px" />
 
             <LinearLayout

@@ -6,8 +6,13 @@
 <!-- START xml_defaults -->
 <defaultsMap>
     <entry>
-        <key>TextBookNerd_AppVersion</key>
+        <key>BitVedas_AppVersion</key>
         <value>00</value>
+    </entry>
+
+    <entry>
+        <key>BitVedas_isBlogAvailable</key>
+        <value>false</value>
     </entry>
 
 </defaultsMap><!-- END xml_defaults -->

@@ -200,7 +200,7 @@ public class UserProfileManager {
                             //MyLibraryBookList.add(BookID);
 
                             DatabaseReference GetBookDB;
-                            GetBookDB = FirebaseDatabase.getInstance().getReference("library/books/" + BookID);
+                            GetBookDB = FirebaseDatabase.getInstance().getReference("users/" + UserUniqueID + "/mylibrary/books/" + BookID);
                             GetBookDB.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {

@@ -50,7 +50,9 @@
         <activity
             android:name=".HomeActivity"
             android:theme="@style/AppTheme" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".LoginActivity"
+            android:theme="@style/LoginAppTheme"
+            ></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
