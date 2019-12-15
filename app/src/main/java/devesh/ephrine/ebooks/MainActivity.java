@@ -12,7 +12,10 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
+        Fabric.with(this, new Crashlytics());
+
         hideSystemUI();
         Thread background = new Thread() {
             public void run() {
@@ -41,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(i);
                     // Remove activity
                     MainActivity.this.finish();
-
 
 
                 } catch (Exception e) {

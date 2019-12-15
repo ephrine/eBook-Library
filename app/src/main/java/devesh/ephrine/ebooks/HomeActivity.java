@@ -22,8 +22,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.ConsoleMessage;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -44,6 +42,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -51,6 +50,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -60,17 +60,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import devesh.ephrine.ebooks.mRecycleView.MyAdapter;
 import devesh.ephrine.ebooks.mRecycleView.MyLibraryAdapter;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import io.fabric.sdk.android.Fabric;
 
 public class HomeActivity extends AppCompatActivity {
 
     public String TAG = String.valueOf(R.string.app_name);
+    public LinearLayout LLEmpty;
+    public CardView EmptyLibraryCardView;
+    public CardView NoInternetCardView;
     //  public UserProfileManager mUser;
     ArrayList<HashMap<String, String>> StoreBooksList = new ArrayList();
     RecyclerView recyclerView;
@@ -82,26 +85,93 @@ public class HomeActivity extends AppCompatActivity {
     View includeAccountView;
     View includeMyLibraryBooks;
     View includeAbout;
-
     FirebaseDatabase database;
-
     ArrayList<HashMap<String, String>> MyLibraryBookHashmap = new ArrayList();
     String UserUniqueID;
     String UserPhno;
     ProgressBar HomeLoading;
-
     UserProfileManager mUser;
-
     DataSnapshot BookLibraryDB;
     BottomNavigationView navigation;
-
     AdRequest adRequest;
     SmoothProgressBar smoothProgressBar;
     FirebaseRemoteConfig mFirebaseRemoteConfig;
     AdView mAdView;
     boolean isBlogAvailable;
+    boolean isAppUpdateAvailable;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+  /*  @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.MyLibraryMenu) {
+            getSupportFragmentManager().popBackStack();
+
+            includeHomeView.setVisibility(View.GONE);
+            includeAccountView.setVisibility(View.GONE);
+            includeMyLibraryBooks.setVisibility(View.VISIBLE);
+            includeAbout.setVisibility(View.GONE);
+
+            LoadMyLibrary();
+
+        } else if (id == R.id.myAccountMenu) {
+            getSupportFragmentManager().popBackStack();
+
+            includeHomeView.setVisibility(View.GONE);
+            includeAccountView.setVisibility(View.VISIBLE);
+            includeMyLibraryBooks.setVisibility(View.GONE);
+            includeAbout.setVisibility(View.GONE);
+
+            LoadMyAccount();
+
+        } else if (id == R.id.BrowseStoreMenu) {
+            getSupportFragmentManager().popBackStack();
+
+            includeHomeView.setVisibility(View.VISIBLE);
+            includeAccountView.setVisibility(View.GONE);
+            includeMyLibraryBooks.setVisibility(View.GONE);
+            includeAbout.setVisibility(View.GONE);
+
+            loadbooks();
 
 
+
+        } else if (id == R.id.settingMenu) {
+            includeHomeView.setVisibility(View.GONE);
+            includeAccountView.setVisibility(View.GONE);
+            includeMyLibraryBooks.setVisibility(View.GONE);
+            includeAbout.setVisibility(View.GONE);
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+
+                    .replace(R.id.settings_container, new SettingsFragment())
+                    .addToBackStack(null)
+                    .commit();
+
+        } else if (id == R.id.includeMyAccount) {
+
+            includeHomeView.setVisibility(View.GONE);
+            includeAccountView.setVisibility(View.VISIBLE);
+            includeMyLibraryBooks.setVisibility(View.GONE);
+            includeAbout.setVisibility(View.GONE);
+
+        }
+        else if (id == R.id.AboutMenu) {
+            getSupportFragmentManager().popBackStack();
+
+            includeHomeView.setVisibility(View.GONE);
+            includeAccountView.setVisibility(View.GONE);
+            includeMyLibraryBooks.setVisibility(View.GONE);
+            includeAbout.setVisibility(View.VISIBLE);
+
+        }
+
+        /* else if (id == R.id.nav_send) {
+        }*/
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -213,8 +283,13 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
+        isAppUpdateAvailable = false;
         adRequest = new AdRequest.Builder().build();
+
+        Fabric.with(this, new Crashlytics());
+
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         //     Toolbar toolbar = findViewById(R.id.toolbar);
         //    setSupportActionBar(toolbar);
@@ -232,7 +307,9 @@ public class HomeActivity extends AppCompatActivity {
 
             UserUniqueID = UserPhno.replace("+", "x");
             mUser = new UserProfileManager(this);
-
+            Crashlytics.setUserIdentifier(auth.getUid());
+            //  Crashlytics.getInstance().crash(); // Force a crash
+            mFirebaseAnalytics.setUserId(auth.getUid());
         } else {
 
             // not signed in
@@ -293,17 +370,19 @@ public class HomeActivity extends AppCompatActivity {
                             mFirebaseRemoteConfig.activateFetched();
 
                             String ServerAppVersion = mFirebaseRemoteConfig.getString("BitVedas_AppVersion");
-                           // isBlogAvailable = mFirebaseRemoteConfig.getBoolean("TextBookNerd_isBlogAvailable");
+                            // isBlogAvailable = mFirebaseRemoteConfig.getBoolean("TextBookNerd_isBlogAvailable");
 
-
-                            Log.d(TAG, "onCreate: Remote Config: Server App Version:" + ServerAppVersion+"\n isBlogAvailable:"+isBlogAvailable);
+                            Log.d(TAG, "onCreate: Remote Config: Server App Version:" + ServerAppVersion + "\n isBlogAvailable:" + isBlogAvailable);
                             int AppVersion = Integer.parseInt(getString(R.string.app_version));
                             if (Integer.parseInt(ServerAppVersion) == AppVersion) {
                                 Log.d(TAG, "onComplete: Remote Config: App latest Version");
+                                isAppUpdateAvailable = false;
+
                             }
                             if (AppVersion < Integer.parseInt(ServerAppVersion)) {
                                 Log.d(TAG, "onComplete: Remote Config: Need App Update");
                                 CreateNotification(getString(R.string.app_name), "New App Update is Available.");
+                                isAppUpdateAvailable = true;
                             }
 
                             //   CreateNotification("Update Available", "Update now");
@@ -321,77 +400,77 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-  /*  @SuppressWarnings("StatementWithEmptyBody")
+  /*  private BillingClient billingClient;
+
+public void billing(){
+    billingClient = BillingClient.newBuilder(HomeActivity.this).setListener(this).build();
+    billingClient.startConnection(new BillingClientStateListener() {
+        @Override
+        public void onBillingSetupFinished(BillingResult billingResult) {
+            if (billingResult.getResponseCode() == BillingResponse.OK) {
+                // The BillingClient is ready. You can query purchases here.
+            }
+        }
+        @Override
+        public void onBillingServiceDisconnected() {
+            // Try to restart the connection on the next request to
+            // Google Play by calling the startConnection() method.
+        }
+    });
+
+
+
+    List<String> skuList = new ArrayList<> ();
+    skuList.add("premium_upgrade");
+    skuList.add("gas");
+    SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+    params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
+    billingClient.querySkuDetailsAsync(params.build(),
+            new SkuDetailsResponseListener() {
+                @Override
+                public void onSkuDetailsResponse(BillingResult billingResult,
+                                                 List<SkuDetails> skuDetailsList) {
+                    // Process the result.
+                }
+            });
+
+
+    if (result.getResponseCode() == BillingResponse.OK && skuDetailsList != null) {
+        for (SkuDetails skuDetails : skuDetailsList) {
+            String sku = skuDetails.getSku();
+            String price = skuDetails.getPrice();
+            if ("premium_upgrade".equals(sku)) {
+                premiumUpgradePrice = price;
+            } else if ("gas".equals(sku)) {
+                gasPrice = price;
+            }
+        }
+
+
+        // Retrieve a value for "skuDetails" by calling querySkuDetailsAsync().
+        BillingFlowParams flowParams = BillingFlowParams.newBuilder()
+                .setSkuDetails(skuDetails)
+                .build();
+        int responseCode = billingClient.launchBillingFlow(flowParams);
+    }
+
+}
+
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.MyLibraryMenu) {
-            getSupportFragmentManager().popBackStack();
-
-            includeHomeView.setVisibility(View.GONE);
-            includeAccountView.setVisibility(View.GONE);
-            includeMyLibraryBooks.setVisibility(View.VISIBLE);
-            includeAbout.setVisibility(View.GONE);
-
-            LoadMyLibrary();
-
-        } else if (id == R.id.myAccountMenu) {
-            getSupportFragmentManager().popBackStack();
-
-            includeHomeView.setVisibility(View.GONE);
-            includeAccountView.setVisibility(View.VISIBLE);
-            includeMyLibraryBooks.setVisibility(View.GONE);
-            includeAbout.setVisibility(View.GONE);
-
-            LoadMyAccount();
-
-        } else if (id == R.id.BrowseStoreMenu) {
-            getSupportFragmentManager().popBackStack();
-
-            includeHomeView.setVisibility(View.VISIBLE);
-            includeAccountView.setVisibility(View.GONE);
-            includeMyLibraryBooks.setVisibility(View.GONE);
-            includeAbout.setVisibility(View.GONE);
-
-            loadbooks();
-
-
-
-        } else if (id == R.id.settingMenu) {
-            includeHomeView.setVisibility(View.GONE);
-            includeAccountView.setVisibility(View.GONE);
-            includeMyLibraryBooks.setVisibility(View.GONE);
-            includeAbout.setVisibility(View.GONE);
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-
-                    .replace(R.id.settings_container, new SettingsFragment())
-                    .addToBackStack(null)
-                    .commit();
-
-        } else if (id == R.id.includeMyAccount) {
-
-            includeHomeView.setVisibility(View.GONE);
-            includeAccountView.setVisibility(View.VISIBLE);
-            includeMyLibraryBooks.setVisibility(View.GONE);
-            includeAbout.setVisibility(View.GONE);
-
+    void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
+        if (billingResult.getResponseCode() == BillingResponse.OK
+                && purchases != null) {
+            for (Purchase purchase : purchases) {
+                handlePurchase(purchase);
+            }
+        } else if (billingResult.getResponseCode() == BillingResponse.USER_CANCELED) {
+            // Handle an error caused by a user cancelling the purchase flow.
+        } else {
+            // Handle any other error codes.
         }
-        else if (id == R.id.AboutMenu) {
-            getSupportFragmentManager().popBackStack();
+    }
 
-            includeHomeView.setVisibility(View.GONE);
-            includeAccountView.setVisibility(View.GONE);
-            includeMyLibraryBooks.setVisibility(View.GONE);
-            includeAbout.setVisibility(View.VISIBLE);
-
-        }
-
-        /* else if (id == R.id.nav_send) {
-        }*/
+*/
 
     /*  @Override
       public void onBackPressed() {
@@ -487,78 +566,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
     }
-
-  /*  private BillingClient billingClient;
-
-public void billing(){
-    billingClient = BillingClient.newBuilder(HomeActivity.this).setListener(this).build();
-    billingClient.startConnection(new BillingClientStateListener() {
-        @Override
-        public void onBillingSetupFinished(BillingResult billingResult) {
-            if (billingResult.getResponseCode() == BillingResponse.OK) {
-                // The BillingClient is ready. You can query purchases here.
-            }
-        }
-        @Override
-        public void onBillingServiceDisconnected() {
-            // Try to restart the connection on the next request to
-            // Google Play by calling the startConnection() method.
-        }
-    });
-
-
-
-    List<String> skuList = new ArrayList<> ();
-    skuList.add("premium_upgrade");
-    skuList.add("gas");
-    SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-    params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
-    billingClient.querySkuDetailsAsync(params.build(),
-            new SkuDetailsResponseListener() {
-                @Override
-                public void onSkuDetailsResponse(BillingResult billingResult,
-                                                 List<SkuDetails> skuDetailsList) {
-                    // Process the result.
-                }
-            });
-
-
-    if (result.getResponseCode() == BillingResponse.OK && skuDetailsList != null) {
-        for (SkuDetails skuDetails : skuDetailsList) {
-            String sku = skuDetails.getSku();
-            String price = skuDetails.getPrice();
-            if ("premium_upgrade".equals(sku)) {
-                premiumUpgradePrice = price;
-            } else if ("gas".equals(sku)) {
-                gasPrice = price;
-            }
-        }
-
-
-        // Retrieve a value for "skuDetails" by calling querySkuDetailsAsync().
-        BillingFlowParams flowParams = BillingFlowParams.newBuilder()
-                .setSkuDetails(skuDetails)
-                .build();
-        int responseCode = billingClient.launchBillingFlow(flowParams);
-    }
-
-}
-
-    @Override
-    void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
-        if (billingResult.getResponseCode() == BillingResponse.OK
-                && purchases != null) {
-            for (Purchase purchase : purchases) {
-                handlePurchase(purchase);
-            }
-        } else if (billingResult.getResponseCode() == BillingResponse.USER_CANCELED) {
-            // Handle an error caused by a user cancelling the purchase flow.
-        } else {
-            // Handle any other error codes.
-        }
-    }
-
-*/
 
     public void SaveData(View v) {
         if (includeAccountView.getVisibility() == View.VISIBLE) {
@@ -726,42 +733,47 @@ public void billing(){
 
     }
 
-    public LinearLayout LLEmpty;
-    public CardView EmptyLibraryCardView;
-    public CardView NoInternetCardView;
     public void LoadMyLibrary() {
 
 
         if (includeMyLibraryBooks.getVisibility() != View.GONE) {
 
             LLEmpty = findViewById(R.id.PopUpLayout);
-            EmptyLibraryCardView=findViewById(R.id.EmptyLibraryCardView);
-            NoInternetCardView=findViewById(R.id.NoInternetCardView);
+            EmptyLibraryCardView = findViewById(R.id.EmptyLibraryCardView);
+            NoInternetCardView = findViewById(R.id.NoInternetCardView);
 
-            if(isInternetAvailable()){
+            if (isInternetAvailable()) {
                 Log.d(TAG, "LoadMyLibrary: Net  AVAILABLE #0");
-                if(LLEmpty.getVisibility()!=View.GONE){
-                NoInternetCardView.setVisibility(View.GONE);
+                if (LLEmpty.getVisibility() != View.GONE) {
+                    NoInternetCardView.setVisibility(View.GONE);
                     Log.d(TAG, "LoadMyLibrary: Net  AVAILABLE #1");
-                }else {
+                } else {
                     Log.d(TAG, "LoadMyLibrary: Net  AVAILABLE #2");
                     LLEmpty.setVisibility(View.GONE);
                     NoInternetCardView.setVisibility(View.GONE);
                 }
 
-            }else{
+            } else {
 
                 Log.d(TAG, "LoadMyLibrary: Net not AVAILABLE #0");
-                if(LLEmpty.getVisibility()!=View.GONE){
+                if (LLEmpty.getVisibility() != View.GONE) {
                     NoInternetCardView.setVisibility(View.VISIBLE);
                     Log.d(TAG, "LoadMyLibrary: Net not AVAILABLE #1");
-                }else {
+                } else {
                     Log.d(TAG, "LoadMyLibrary: Net AVAILABLE #2");
                     LLEmpty.setVisibility(View.GONE);
                     NoInternetCardView.setVisibility(View.GONE);
                 }
 
             }
+            LinearLayout LLUpdate = (LinearLayout) findViewById(R.id.LLUpdate);
+
+            if (isAppUpdateAvailable) {
+                LLUpdate.setVisibility(View.VISIBLE);
+            } else {
+                LLUpdate.setVisibility(View.GONE);
+            }
+
 
             myLibraryBooksrecyclerView = (RecyclerView) findViewById(R.id.myBookLibraryRecycleView);
             // myLibraryBooksrecyclerView.removeAllViews();
@@ -792,29 +804,29 @@ public void billing(){
 
                         if (BookLibraryDB.getChildrenCount() == 0) {
                             HomeLoading.setVisibility(View.GONE);
-                            if(LLEmpty.getVisibility()!=View.GONE){
-                                if(isInternetAvailable()){
+                            if (LLEmpty.getVisibility() != View.GONE) {
+                                if (isInternetAvailable()) {
                                     EmptyLibraryCardView.setVisibility(View.VISIBLE);
-                               //     NoInternetCardView.setVisibility(View.GONE);
-                                }else{
+                                    //     NoInternetCardView.setVisibility(View.GONE);
+                                } else {
 
                                     EmptyLibraryCardView.setVisibility(View.VISIBLE);
-                                 //   NoInternetCardView.setVisibility(View.VISIBLE);
+                                    //   NoInternetCardView.setVisibility(View.VISIBLE);
 
                                 }
 
-                            }else {
-                                if(isInternetAvailable()){
+                            } else {
+                                if (isInternetAvailable()) {
                                     LLEmpty.setVisibility(View.VISIBLE);
 
                                     EmptyLibraryCardView.setVisibility(View.VISIBLE);
-                           //         NoInternetCardView.setVisibility(View.GONE);
+                                    //         NoInternetCardView.setVisibility(View.GONE);
 
-                                }else{
+                                } else {
                                     LLEmpty.setVisibility(View.VISIBLE);
 
                                     EmptyLibraryCardView.setVisibility(View.VISIBLE);
-                            //        NoInternetCardView.setVisibility(View.VISIBLE);
+                                    //        NoInternetCardView.setVisibility(View.VISIBLE);
 
                                 }
 
@@ -1016,6 +1028,12 @@ public void billing(){
 
     }
 
+    public void AppUpdateNow(View v) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(getString(R.string.google_play_url)));
+        startActivity(intent);
+    }
+
     public static class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
         public static final String UserName = "pref_username";
         public static final String UserEmail = "pref_useremail";
@@ -1139,12 +1157,76 @@ public void billing(){
 
             Preference PrefBlog = (Preference) findPreference("blog");
 
-       //     PrefBlog.setVisible(false);
+            PrefBlog.setVisible(false);
             PrefBlog.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
                     //open browser or intent here
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse("https://www.ephrine.in/blog"));
+                    startActivity(intent);
+
+                    return true;
+                }
+            });
+
+
+            Preference Preffb = (Preference) findPreference("fb");
+            Preffb.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(getString(R.string.social_media_fb)));
+                    startActivity(intent);
+
+                    return true;
+                }
+            });
+
+
+            Preference Prefinsta = (Preference) findPreference("insta");
+            Prefinsta.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(getString(R.string.social_media_instagram)));
+                    startActivity(intent);
+
+                    return true;
+                }
+            });
+
+            Preference Prefyoutube = (Preference) findPreference("youtube");
+            Prefyoutube.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(getString(R.string.social_media_youtube)));
+                    startActivity(intent);
+
+                    return true;
+                }
+            });
+
+
+            Preference Preftwitter = (Preference) findPreference("twitter");
+            Preftwitter.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(getString(R.string.social_media_twitter)));
+                    startActivity(intent);
+
+                    return true;
+                }
+            });
+
+
+            Preference Preflinkedin = (Preference) findPreference("linkedin");
+            Preflinkedin.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    //open browser or intent here
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(getString(R.string.social_media_linkedin)));
                     startActivity(intent);
 
                     return true;
@@ -1163,7 +1245,7 @@ public void billing(){
                 Log.i(TAG, "App Data Cleared !!");
 
                 Intent intent = new Intent(getContext(), LoginActivity.class);
-      startActivity(intent);
+                startActivity(intent);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1270,11 +1352,20 @@ public void billing(){
             // do your stuff here
 
             Log.d(TAG, "onPageFinished: " + url);
+
+            if (includeHomeView.getVisibility() != View.GONE) {
+                smoothProgressBar.setVisibility(View.GONE);
+            }
+
         }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
+
+            if (includeHomeView.getVisibility() != View.GONE) {
+                smoothProgressBar.setVisibility(View.VISIBLE);
+            }
 
 
         }
@@ -1289,5 +1380,4 @@ public void billing(){
 */
 
     }
-
 }

@@ -5,7 +5,7 @@
     <color name="colorAccent">#827717</color>
     <color name="navSelected">#8F3100</color>
     <color name="blackk">#66000000</color>
-    <color name="cardbg_trans_white">#FFB300</color>
     <color name="cardbg_trans_violet">#37F4511E</color>
     <color name="cardbg_trans_blue">#390091F9</color>
+    <color name="update_bg_trans">#6B33CC00</color>
 </resources>

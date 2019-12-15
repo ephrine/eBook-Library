@@ -6,16 +6,11 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
-    signingConfigs {
-        releaseApp {
-            storeFile file('D:\\Android_Development\\GitHub\\eBook Library\\signkey\\key.jks')
-            storePassword 'deveshcc'
-            keyAlias = 'booklibrary'
-            keyPassword 'deveshcc'
-        }
-    }
+
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
 
@@ -31,7 +26,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables.useSupportLibrary = true
-        signingConfig signingConfigs.releaseApp
 
     }
 
@@ -54,7 +48,6 @@ android {
 }
 
 
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -75,7 +68,7 @@ dependencies {
 
 
 // Import the platform
-    implementation platform('com.google.firebase:firebase-bom:24.1.0')
+    implementation platform('com.google.firebase:firebase-bom:24.3.0')
 
     // When using a BoM, dependencies don't require a specified version
     // If you do specify a version, it overrides the library version specified in the BoM
@@ -87,6 +80,8 @@ dependencies {
     //implementation 'com.google.firebase:firebase-ads:18.3.0'
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.crashlytics.sdk.android:crashlytics'
+    implementation 'com.google.firebase:firebase-perf'
 
     // FirebaseUI for Firebase Auth
     implementation 'com.firebaseui:firebase-ui-auth:5.0.0'
@@ -121,6 +116,6 @@ dependencies {
     implementation "androidx.multidex:multidex:$multidex_version"
 
     //Chrome Tabs
-   // implementation 'com.androidx.support:customtabs:23.3.0'
+    // implementation 'com.androidx.support:customtabs:23.3.0'
 
 }

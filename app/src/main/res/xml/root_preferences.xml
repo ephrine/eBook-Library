@@ -61,9 +61,9 @@
     <PreferenceCategory android:title="About">
 
         <Preference
+            app:key="blog"
             app:summary="Read latest news and updates related to our company and products"
             app:title="Blog and News"
-            app:key="blog"
             app:useSimpleSummaryProvider="true" />
 
         <Preference
@@ -90,5 +90,43 @@
 
 
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="Follow us on">
+        <Preference
+            android:icon="@drawable/fb100px"
+            app:key="fb"
+            app:summary="@string/social_media_fb"
+            app:title="Facebook"
+            app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:icon="@drawable/insta100px"
+            app:key="insta"
+            app:summary="@string/social_media_instagram"
+            app:title="Instagram"
+            app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:icon="@drawable/youtube100px"
+            app:key="youtube"
+            app:summary="@string/social_media_youtube"
+            app:title="Youtube Channel"
+            app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:icon="@drawable/twitter100px"
+            app:key="twitter"
+            app:summary="@string/social_media_twitter"
+            app:title="Twitter"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:icon="@drawable/linkedin100px"
+            app:key="linkedin"
+            app:summary="@string/social_media_linkedin"
+            app:title="Linkedin"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+    <Preference
+        android:key="ab"
+        android:layout="@layout/ephrinelogo" />
+
 
 </PreferenceScreen>

@@ -6,20 +6,18 @@
 
 package devesh.ephrine.ebooks;
 
-import android.bluetooth.BluetoothClass;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.widget.VideoView;
-
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -28,19 +26,22 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
+import io.fabric.sdk.android.Fabric;
+
 
 public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 100;
 
     public String TAG = String.valueOf(R.string.app_name);
-    private FirebaseAuth mAuth;
     VideoView videoview;
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         videoview = (VideoView) findViewById(R.id.videoView);
-        Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.loginvideo);
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.loginvideo);
         videoview.setVideoURI(uri);
         videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -53,8 +54,11 @@ public class LoginActivity extends AppCompatActivity {
 //FirebaseAuth.getInstance();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        Fabric.with(this, new Crashlytics());
 
         if (currentUser != null) {
+            Crashlytics.setUserIdentifier(currentUser.getUid());
+
             Intent intent = new Intent(this, HomeActivity.class);
             finish();
             //  String message = editText.getText().toString();
@@ -78,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         videoview = (VideoView) findViewById(R.id.videoView);
-        Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.loginvideo);
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.loginvideo);
         videoview.setVideoURI(uri);
         videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -89,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
         videoview.start();
     }
 
-     public void login() {
+    public void login() {
 
         startActivityForResult(
                 AuthUI.getInstance()
@@ -163,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
         LoginActivity.this.finish();
     }
 
-    public void PPClick(View v){
+    public void PPClick(View v) {
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("https://ephrine.in/privacy-policy"));
@@ -172,7 +176,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void LoginNow(View v){
+    public void LoginNow(View v) {
 
         login();
     }

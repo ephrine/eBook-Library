@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 
 import devesh.ephrine.ebooks.R;
 import devesh.ephrine.ebooks.UserProfileManager;
+import io.fabric.sdk.android.Fabric;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public static final String EXTRA_MESSAGE = "ReadBookID";
@@ -38,6 +40,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public MyAdapter(Context mContext, ArrayList<HashMap<String, String>> myDataset) {
+        Fabric.with(mContext, new Crashlytics());
+
         mDataset = myDataset;
         this.mContext = mContext;
         mUser = new UserProfileManager(mContext);

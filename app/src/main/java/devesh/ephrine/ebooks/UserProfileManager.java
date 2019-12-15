@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,6 +23,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import io.fabric.sdk.android.Fabric;
 
 public class UserProfileManager {
 
@@ -49,6 +52,7 @@ public class UserProfileManager {
     ArrayList<HashMap<String, String>> MyLibraryBookHashmap = new ArrayList();
 
     public UserProfileManager(Context mContext) {
+        Fabric.with(mContext, new Crashlytics());
 
         this.mContext = mContext;
         Download();
@@ -74,6 +78,7 @@ public class UserProfileManager {
             User.put("UserUniqueID", UserUniqueID);
 
             Log.i(TAG, "-----------\n onCreate: \n UserUID:" + UserUID + "\n User Phone no:" + UserPhno + "\n Unique ID: " + UserUniqueID + "\n name:" + UserName + "\n -------------");
+
 
             SP = PreferenceManager.getDefaultSharedPreferences(mContext);
 

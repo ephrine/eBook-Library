@@ -37,6 +37,49 @@
                 android:layout_margin="10dp"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:id="@+id/LLUpdate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="AppUpdateNow"
+                        app:cardBackgroundColor="@color/update_bg_trans"
+                        app:cardElevation="0dp"
+                        app:cardPreventCornerOverlap="true"
+                        app:cardUseCompatPadding="true"
+                        app:contentPadding="5dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="App Update is Available" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="  Tap to Update"
+                                    android:textColor="@color/fui_linkColor" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -64,10 +107,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:visibility="gone">
 
 
         <androidx.cardview.widget.CardView
@@ -87,7 +129,6 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/imageView"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     app:srcCompat="@drawable/app_logo_no_internet" />
@@ -123,7 +164,6 @@
                     app:srcCompat="@drawable/appicon" />
 
                 <TextView
-                    android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

@@ -11,14 +11,15 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.util.Log;
 
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.messaging.RemoteMessage;
+
+import io.fabric.sdk.android.Fabric;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
     String TAG = "TextBook Nerd Service";
@@ -35,6 +36,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // ...
+        Fabric.with(this, new Crashlytics());
 
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
@@ -161,7 +163,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
 
     }
-
 
 
 }

@@ -10,14 +10,13 @@
 
     <VideoView
         android:id="@+id/videoView"
-        android:layout_gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
-         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_gravity="center" />
 
     <LinearLayout
-        android:id="@+id/LLSplashLogin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
@@ -41,9 +40,11 @@
             android:textSize="33sp" />
 
         <TextView
-            android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="@string/app_desc1"
             android:textAlignment="center"
             android:textColor="@android:color/white" />

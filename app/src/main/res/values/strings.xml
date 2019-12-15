@@ -1,25 +1,23 @@
 <resources>
     <string name="app_name">BitVedas</string>
 
-    <string name="title_activity_book_read">TextBook Reader</string>
+    <string name="title_activity_book_read">BitVedas Reader</string>
 
-    <string name="Book_Store_url">https://www.ephrine.in/bitvedas/app/store.html</string>
-  <!--  <string name="Book_Store_url">http://localhost:5000/textbook-nerd/app/store.html</string>-->
 
 
     <string name="pref_purchase">prefpurchase</string>
     <string name="app_version">1</string>
-    <string name="version">0.0.1 (Pre-Alpha)</string>
+    <string name="version">0.0.1 (Beta)</string>
     <string name="app_desc">
-        Books give a soul to the universe, wings to the mind, flight to the imagination, and life to everything. Bitedas provides free access to Science Textbooks of various category like medicine, pharmacy, chemistry, biochemistry, Ayurveda and many more.
+        Books give a soul to the universe, wings to the mind, flight to the imagination, and life to everything. BitVedas provides free access to Vedic Textbooks of various category like medicine, Ayurveda, Vedic Knowledge and many more.
         Our book collection is consist of public domain books hence they are available for free reading.
     </string>
 
-    <string name="app_desc1">
-        We provide free access to Science Textbooks of various category like medicine, pharmacy, chemistry, biochemistry, Ayurveda and many more.
-    </string>
-
-    <string name="update_url">https://www.ephrine.in</string>
+    <!-- <string name="app_desc1xxxxx">
+         We provide free access to Science Textbooks of various category like medicine, pharmacy, chemistry, biochemistry, Ayurveda and many more.
+     </string>
+ -->
+    <string name="app_desc1">E-Book Library of Vedic Books written by Ancient Indian Vedas.</string>
     <!-- TODO: Remove or change this placeholder text -->
 
     <!-- Preference Titles -->
@@ -32,15 +30,21 @@
     <string name="no_internet">Please Connect to Internet</string>
 
 
-
     <string name="FCM_update_url">ep_update_url</string>
     <string name="FCM_browser_url">ep_browser_url</string>
     <string name="FCM_open_app_url">ep_open_app_url</string>
 
+    <string name="social_media_fb">https://www.facebook.com/ephrineapps</string>
+    <string name="social_media_twitter">https://twitter.com/ephrineapps</string>
+    <string name="social_media_instagram">https://www.instagram.com/ephrineapps</string>
+    <string name="social_media_linkedin">https://www.linkedin.com/company/ephrine</string>
+    <string name="social_media_youtube">https://www.youtube.com/channel/UCO-OX7K3zIeY05HaIAu3HRw</string>
 
 
-    <string name="AdMob_App_Id">ca-app-pub-3940256099942544~3347511713</string>
-    <string name="AdMob_Banner_Id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="AdMob_Int_Id">ca-app-pub-3940256099942544/1033173712</string>
-
+    <string name="google_play_url">https://play.google.com/store/apps/details?id=devesh.ephrine.ebooks</string>
+    <!--
+        <string name="AdMob_App_Id">ca-app-pub-3940256099942544~3347511713</string>
+        <string name="AdMob_Banner_Id">ca-app-pub-3940256099942544/6300978111</string>
+        <string name="AdMob_Int_Id">ca-app-pub-3940256099942544/1033173712</string>
+        -->
 </resources>

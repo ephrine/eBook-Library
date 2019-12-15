@@ -14,12 +14,18 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
+
 public class UpdateActivity extends AppCompatActivity {
 
-    String TAG="Notification";
+    String TAG = "Notification";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
         if (getIntent().getExtras() != null) {
             for (String key : getIntent().getExtras().keySet()) {
@@ -58,11 +64,8 @@ public class UpdateActivity extends AppCompatActivity {
         }
 
 
-
-
-
-      //  Intent intent = new Intent(Intent.ACTION_VIEW);
-       // intent.setData(Uri.parse(getString(R.string.update_url)));
+        //  Intent intent = new Intent(Intent.ACTION_VIEW);
+        // intent.setData(Uri.parse(getString(R.string.update_url)));
         //startActivity(intent);
 
         //UpdateActivity.this.finish();
@@ -71,8 +74,7 @@ public class UpdateActivity extends AppCompatActivity {
     }
 
 
-
-    void OpenChromeTab(String url){
+    void OpenChromeTab(String url) {
 
         CustomTabsIntent.Builder builder1 = new CustomTabsIntent.Builder();
         CustomTabsIntent customTabsIntent = builder1.build();
