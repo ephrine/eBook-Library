@@ -11,7 +11,7 @@ on:
 jobs:
   test:
     name: Run Unit Tests
-    runs-on: ubuntu-18.04
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v1
@@ -21,10 +21,17 @@ jobs:
           java-version: 1.8
       - name: Unit tests
         run: bash ./gradlew test --stacktrace
+        env: 
+         sign.key.password: ${{secrets.sign_key_password}}
+         sign.key.alias: ${{secrets.sign_key_alias}}
+         sign.key.path: ${{secrets.sign_key_path}}
+         g.license.key: ${{secrets.g_license_key}}
+         google.services.json: ${{secrets.google_services_json}}
+         key.url: ${{secrets.key_url}}
 
   apk:
     name: Generate APK
-    runs-on: ubuntu-18.04
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v1
@@ -34,6 +41,9 @@ jobs:
           java-version: 1.8
       - name: Build debug APK
         run: bash ./gradlew assembleDebug --stacktrace
+        env: 
+         google.services.json: ${{secrets.google_services_json}}
+         env.url: ${{secrets.env_url}}
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
