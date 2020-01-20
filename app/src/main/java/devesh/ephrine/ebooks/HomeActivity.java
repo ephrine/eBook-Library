@@ -67,6 +67,9 @@ import devesh.ephrine.ebooks.mRecycleView.MyAdapter;
 import devesh.ephrine.ebooks.mRecycleView.MyLibraryAdapter;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import io.fabric.sdk.android.Fabric;
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -289,7 +292,8 @@ public class HomeActivity extends AppCompatActivity {
         adRequest = new AdRequest.Builder().build();
 
         Fabric.with(this, new Crashlytics());
-
+        AppCenter.start(getApplication(), getString(R.string.MS_AppCenter_App_Id),
+                Analytics.class, Crashes.class);
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 

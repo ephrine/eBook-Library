@@ -73,8 +73,8 @@ android {
         applicationId "devesh.ephrine.ebooks"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "0.0.1 (Beta)"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -86,7 +86,9 @@ android {
     resValue "string", "AdMob_Banner_Id", "\"" + properties.getProperty('admob.ad.banner') + "\""
     resValue "string", "AdMob_Int_Id", "\"" + properties.getProperty('admob.ad.int') + "\""
     resValue "string", "Store_URL", "\"" + properties.getProperty('store.url') + "\""
- 
+    resValue "string", "MS_AppCenter_App_Id", "\"" + properties.getProperty('ms.app.center.id') + "\""
+    resValue "string", "app_version", "\"" + versionCode + "\""
+    resValue "string", "version", "\"" + versionName + "\""
 
     }
 
@@ -182,5 +184,10 @@ dependencies {
 
     //Chrome Tabs
     // implementation 'com.androidx.support:customtabs:23.3.0'
+
+        def appCenterSdkVersion = '2.5.1'
+        implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
+        implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
+
 
 }
