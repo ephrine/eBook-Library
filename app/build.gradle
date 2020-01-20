@@ -30,7 +30,7 @@ if (!kk.exists()) {
     new URL(System.getenv('env.url')).withInputStream { i -> kk.withOutputStream { it << kk } }
 
     project.logger.info('Downloaded env.properties for signing')
-    properties.load(project.rootProject.file('env.properties').newDataInputStream())
+    properties.load(project.rootProject.file('bitvedasenv.properties').newDataInputStream())
 
 
 }
