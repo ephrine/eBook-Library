@@ -76,3 +76,6 @@ app/src/main/res/values/SecureStrings.xml
 app/src/main/res/values/SecureStrings.xml
 
 bitvedasenv.properties
+app/src/main/res/values/SecureStrings.xml
+env.properties
+app/src/main/res/values/SecureStrings.xml

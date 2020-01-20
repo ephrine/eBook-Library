@@ -43,6 +43,8 @@ def keyalias = properties.getProperty('sign.key.alias')
 def keypath= properties.getProperty('sign.key.path')
 
 
+
+
 android {
 
        signingConfigs {
@@ -71,6 +73,13 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables.useSupportLibrary = true
+
+
+    resValue "string", "AdMob_App_Id", "\"" + properties.getProperty('admob.app.id') + "\""
+    resValue "string", "AdMob_Banner_Id", "\"" + properties.getProperty('admob.ad.banner') + "\""
+    resValue "string", "AdMob_Int_Id", "\"" + properties.getProperty('admob.ad.int') + "\""
+    resValue "string", "Store_URL", "\"" + properties.getProperty('store.url') + "\""
+ 
 
     }
 
