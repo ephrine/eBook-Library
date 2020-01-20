@@ -1,4 +1,4 @@
-name: Android Pull Request & Master CI
+name: Android Build Debug APK
 
 on:
   pull_request:
@@ -22,12 +22,8 @@ jobs:
       - name: Unit tests
         run: bash ./gradlew test --stacktrace
         env: 
-         sign.key.password: ${{secrets.sign_key_password}}
-         sign.key.alias: ${{secrets.sign_key_alias}}
-         sign.key.path: ${{secrets.sign_key_path}}
-         g.license.key: ${{secrets.g_license_key}}
          google.services.json: ${{secrets.google_services_json}}
-         key.url: ${{secrets.key_url}}
+         env.url: ${{secrets.env_url}}
 
   apk:
     name: Generate APK
