@@ -33,7 +33,12 @@ if (!kk.exists()) {
     properties.load(project.rootProject.file('bitvedasenv.properties').newDataInputStream())
 
 
-}
+def keypassword = properties.getProperty('sign.key.password')
+def keystorepassword = properties.getProperty('sign.key.storepassword')
+def keyalias = properties.getProperty('sign.key.alias')
+
+
+}else{
 
 properties.load(project.rootProject.file('bitvedasenv.properties').newDataInputStream())
 
@@ -41,6 +46,8 @@ def keypassword = properties.getProperty('sign.key.password')
 def keystorepassword = properties.getProperty('sign.key.storepassword')
 def keyalias = properties.getProperty('sign.key.alias')
 def keypath= properties.getProperty('sign.key.path')
+
+}
 
 
 
