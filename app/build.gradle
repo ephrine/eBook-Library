@@ -9,7 +9,52 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'io.fabric'
 apply plugin: 'com.google.firebase.firebase-perf'
 
+
+def f = new File('app/google-services.json')
+if (!f.exists()) {
+    new URL(System.getenv('google.services.json')).withInputStream { i ->
+        f.withOutputStream {
+            it << i
+        }
+    }
+    project.logger.info('Downloaded google-services.json')
+
+} else {
+    project.logger.info('google-services.json already exists')
+}
+
+Properties properties = new Properties()
+
+def kk = new File('bitvedasenv.properties')
+if (!kk.exists()) {
+    new URL(System.getenv('env.url')).withInputStream { i -> kk.withOutputStream { it << kk } }
+
+    project.logger.info('Downloaded env.properties for signing')
+    properties.load(project.rootProject.file('env.properties').newDataInputStream())
+
+
+}
+
+properties.load(project.rootProject.file('bitvedasenv.properties').newDataInputStream())
+
+def keypassword = properties.getProperty('sign.key.password')
+def keystorepassword = properties.getProperty('sign.key.storepassword')
+def keyalias = properties.getProperty('sign.key.alias')
+def keypath= properties.getProperty('sign.key.path')
+
+
 android {
+
+       signingConfigs {
+           productionAPK {
+               storeFile file(keypath)
+               storePassword keystorepassword
+               keyAlias = keyalias
+               keyPassword= keypassword
+           }
+       }
+
+
 
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -35,6 +80,10 @@ android {
             shrinkResources true
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+           // signingConfig signingConfigs.productionAPK
+        }
+        debug {
+           // signingConfig signingConfigs.productionAPK
         }
     }
 
@@ -95,8 +144,8 @@ dependencies {
     implementation 'com.android.support:recyclerview-selection:+'
 
     //Glide
-    implementation 'com.github.bumptech.glide:glide:4.9.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 
     //PDF Viewer
     implementation 'com.github.barteksc:android-pdf-viewer:3.1.0-beta.1'

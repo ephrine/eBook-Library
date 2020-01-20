@@ -98,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
+                      //  .setIsSmartLockEnabled(false)
                         .setAvailableProviders(Arrays.asList(
                                 //    new AuthUI.IdpConfig.GoogleBuilder().build(),
                                 //  new AuthUI.IdpConfig.FacebookBuilder().build(),

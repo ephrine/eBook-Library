@@ -74,3 +74,5 @@ signkey/key.jks
 signkey/private_key.pepk
 app/src/main/res/values/SecureStrings.xml
 app/src/main/res/values/SecureStrings.xml
+
+bitvedasenv.properties

@@ -3,8 +3,6 @@
 
     <string name="title_activity_book_read">BitVedas Reader</string>
 
-
-
     <string name="pref_purchase">prefpurchase</string>
     <string name="app_version">1</string>
     <string name="version">0.0.1 (Beta)</string>
@@ -18,7 +16,6 @@
      </string>
  -->
     <string name="app_desc1">E-Book Library of Vedic Books written by Ancient Indian Vedas.</string>
-    <!-- TODO: Remove or change this placeholder text -->
 
     <!-- Preference Titles -->
     <string name="messages_header">My Account</string>

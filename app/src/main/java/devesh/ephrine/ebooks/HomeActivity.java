@@ -278,9 +278,11 @@ public class HomeActivity extends AppCompatActivity {
         MultiDex.install(this);
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         setContentView(R.layout.activity_main);
         isAppUpdateAvailable = false;
@@ -298,7 +300,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
         database = FirebaseDatabase.getInstance();
-
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
@@ -653,7 +654,8 @@ public void billing(){
 
         if (includeHomeView.getVisibility() != View.GONE) {
 
-            LoadWebViewContent(getString(R.string.Book_Store_url) + "?uid=" + UserUniqueID);
+           // LoadWebViewContent(getString(R.string.Book_Store_url) + "?uid=" + UserUniqueID);
+            LoadWebViewContent(getString(R.string.Store_URL) + "?uid=" + UserUniqueID);
 
 
       /*     recyclerView = (RecyclerView) findViewById(R.id.mRecycleView);

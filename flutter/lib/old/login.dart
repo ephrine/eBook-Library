@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'main.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 String _message = '';
-String _verificationId;
+  String _verificationId;
 
-final TextEditingController _phoneNumberController = TextEditingController();
-final TextEditingController _smsController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _smsController = TextEditingController();
 
-void checkAuth() async {}
-
+  void checkAuth() async {
+ 
+   
+   
+}
 class SignInPage extends StatefulWidget {
   final String title = 'Registration';
   //List<Widget> _layoutsView = [];
@@ -21,6 +23,7 @@ class SignInPage extends StatefulWidget {
 }
 
 class SignInPageState extends State<SignInPage> {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +41,9 @@ class SignInPageState extends State<SignInPage> {
                     content: Text('No one has signed in.'),
                   ));
                   return;
-                } else {}
+                }else{
+                  
+                }
                 _signOut();
                 final String uid = user.uid;
 
@@ -75,23 +80,32 @@ class _PhoneSignInSection extends StatefulWidget {
   State<StatefulWidget> createState() => _PhoneSignInSectionState();
 }
 
+
+
+
 class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
-  bool showVerifyCode = false;
+
+        bool showVerifyCode=false;
+
+
+
 
   @override
   Widget build(BuildContext context) {
     Widget screen;
-    if (showVerifyCode == false) {
-      screen = enterPhoneNo();
-    } else if (showVerifyCode) {
-      screen = enterVerificationCode();
+    if(showVerifyCode==false){
+      screen=enterPhoneNo();
+    }else if(showVerifyCode){
+      screen=enterVerificationCode();
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+
       children: <Widget>[screen],
     );
   }
-
+ 
+ 
   Widget enterPhoneNo() {
     return Container(
         child: Column(
@@ -117,7 +131,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
           alignment: Alignment.center,
           child: RaisedButton(
             onPressed: () async {
-              showVerifyCode = true;
+              showVerifyCode=true;
 
               _verifyPhoneNumber();
             },
@@ -127,6 +141,9 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
       ],
     ));
   }
+
+
+
 
   Widget enterVerificationCode() {
     return Column(children: <Widget>[
@@ -140,6 +157,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
         child: RaisedButton(
           onPressed: () async {
             _signInWithPhoneNumber();
+            
           },
           child: const Text('Sign in with phone number'),
         ),
@@ -211,12 +229,11 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
     setState(() {
       if (user != null) {
         _message = 'Successfully signed in, uid: ' + user.uid;
-
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
       } else {
         _message = 'Sign in failed';
       }
     });
   }
 }
+
+
