@@ -54,7 +54,7 @@ def keypath= properties.getProperty('sign.key.path')
 
 android {
 
-       signingConfigs {
+  /*     signingConfigs {
            productionAPK {
                storeFile file(keypath)
                storePassword keystorepassword
@@ -63,7 +63,7 @@ android {
            }
        }
 
-
+*/
 
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
