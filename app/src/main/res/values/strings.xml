@@ -44,4 +44,11 @@
         <string name="AdMob_Banner_Id">ca-app-pub-3940256099942544/6300978111</string>
         <string name="AdMob_Int_Id">ca-app-pub-3940256099942544/1033173712</string>
         -->
+
+          <!--Test id
+    <string name="AdMob_App_Id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="AdMob_Banner_Id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="AdMob_Int_Id">ca-app-pub-3940256099942544/1033173712</string>
+    -->
+
 </resources>
